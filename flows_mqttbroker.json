@@ -160,7 +160,7 @@
         "id": "3bedeb6fe1cfcd79",
         "type": "function",
         "z": "ac4cb02db15fb728",
-        "name": "Prozentumrechnungx",
+        "name": "Prozentumrechnung",
         "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\n// Neuer Skalierungsfaktor für das SVG (Breite max 100, Höhe max 125)\n// 125 Pixel entsprechen 6000 mm (6 Metern) -> Faktor: 0.020833\nconst scale = 125 / 6000;\n\n// Berechnung für maximal 3 Targets (IDs 0, 1, 2)\nfor (let i = 0; i < 3; i++) {\n    let target = targets.find(t => t.id === i);\n    if (target) {\n\n        // X-Berechnung: Startet in der Mitte (50) und skaliert den Millimeter-Wert\n        let xPixel = 50 + (target.x * scale);\n\n        // Y-Berechnung: Startet unten beim Sensor (125) und wandert nach oben (Minus)\n        let yPixel = 125 - (target.y * scale);\n\n        processedTargets.push({\n            id: target.id,\n            x: Math.round(xPixel * 100) / 100, // Auf 2 Dezimalstellen runden\n            y: Math.round(yPixel * 100) / 100,\n            s: target.s,\n            visible: true\n        });\n    } else {\n        // Falls Target nicht aktiv, als unsichtbar markieren\n        processedTargets.push({ id: i, visible: false });\n    }\n}\n\n// Daten für das neue Dashboard-Template verpacken\nmsg.payload = {\n    targets: processedTargets,\n    // Den Status aus dem Speicher holen (Standardwert ist \"OFF\")\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\"\n};\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
