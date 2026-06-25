@@ -1,0 +1,12 @@
+{
+    "name": "nodered1",
+    "description": "Node red 1",
+    "version": "0.0.1",
+    "dependencies": {},
+    "node-red": {
+        "settings": {
+            "flowFile": "flows_mqttbroker.json",
+            "credentialsFile": "flows_mqttbroker_cred.json"
+        }
+    }
+}

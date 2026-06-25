@@ -1,0 +1,710 @@
+[
+    {
+        "id": "ac4cb02db15fb728",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dc06f9f26c4c93cd",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mqttbroker.local",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "78393b34f0debb7a",
+        "type": "ui-theme",
+        "name": "Standardthema",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "0611583abcae7430",
+        "type": "ui-base",
+        "name": "Mein Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "99bcc587dd073528",
+        "type": "ui-page",
+        "name": "Radar",
+        "ui": "0611583abcae7430",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "78393b34f0debb7a",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "8"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "8"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "75b15bea3008a8a4",
+        "type": "ui-group",
+        "name": "Raumansicht",
+        "page": "99bcc587dd073528",
+        "width": "16",
+        "height": "8",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "3ff3c9c4124ecd4a",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.30.2"
+        }
+    },
+    {
+        "id": "d569f7754aa41cd6",
+        "type": "mqtt in",
+        "z": "ac4cb02db15fb728",
+        "name": "mqtt-radar",
+        "topic": "esp32/radar/attributes/rd06d-04",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "dc06f9f26c4c93cd",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "5413752d31c20cbe"
+            ]
+        ]
+    },
+    {
+        "id": "3bedeb6fe1cfcd79",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Prozentumrechnungxyza",
+        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\n// Neuer Skalierungsfaktor für das SVG (Breite max 100, Höhe max 125)\n// 125 Pixel entsprechen 6000 mm (6 Metern) -> Faktor: 0.020833\nconst scale = 125 / 6000;\n\n// Berechnung für maximal 3 Targets (IDs 0, 1, 2)\nfor (let i = 0; i < 3; i++) {\n    let target = targets.find(t => t.id === i);\n    if (target) {\n\n        // X-Berechnung: Startet in der Mitte (50) und skaliert den Millimeter-Wert\n        let xPixel = 50 + (target.x * scale);\n\n        // Y-Berechnung: Startet unten beim Sensor (125) und wandert nach oben (Minus)\n        let yPixel = 125 - (target.y * scale);\n\n        processedTargets.push({\n            id: target.id,\n            x: Math.round(xPixel * 100) / 100, // Auf 2 Dezimalstellen runden\n            y: Math.round(yPixel * 100) / 100,\n            s: target.s,\n            visible: true\n        });\n    } else {\n        // Falls Target nicht aktiv, als unsichtbar markieren\n        processedTargets.push({ id: i, visible: false });\n    }\n}\n\n// Daten für das neue Dashboard-Template verpacken\nmsg.payload = {\n    targets: processedTargets,\n    // Den Status aus dem Speicher holen (Standardwert ist \"OFF\")\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\"\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4fc37bba2a3c3d37",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "ON/OFF umwandeln",
+        "func": "// Den Zustand (ON oder OFF) in den globalen Speicher schreiben\n// Wir wandeln den Text zur Sicherheit in Kleinbuchstaben um, falls \"On\" oder \"on\" gesendet wird.\nconst status = (msg.payload || \"\").toString().toLowerCase();\n\nif (status.includes(\"on\")) {\n    global.set(\"radar_target_alert\", \"ON\");\n} else {\n    global.set(\"radar_target_alert\", \"OFF\");\n}\n\nreturn msg; // Es muss hier nichts direkt weitergeleitet werden\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 500,
+        "wires": [
+            [
+                "602ff015744490fe"
+            ]
+        ]
+    },
+    {
+        "id": "64eb6d0c16c4bc91",
+        "type": "mqtt in",
+        "z": "ac4cb02db15fb728",
+        "name": "mqtt-radar-Occupancy",
+        "topic": "esp32/radar/occupancy/rd06d-04",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "dc06f9f26c4c93cd",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 500,
+        "wires": [
+            [
+                "4fc37bba2a3c3d37"
+            ]
+        ]
+    },
+    {
+        "id": "602ff015744490fe",
+        "type": "switch",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "ON",
+                "vt": "str",
+                "case": true
+            },
+            {
+                "t": "regex",
+                "v": "OFF",
+                "vt": "str",
+                "case": true
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 410,
+        "y": 640,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5bb2ae59850ed563",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "START",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.source",
+                "pt": "msg",
+                "to": "/dragon-studio-deepsea-sonar-386156.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "/dragon-studio-deepsea-sonar-386156.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "paylod",
+                "pt": "msg",
+                "to": "play",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.loop",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4774bf1f39c9ef89",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "STOPP",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "stop",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8d46b411eec30899",
+        "type": "ui-template",
+        "z": "ac4cb02db15fb728",
+        "group": "75b15bea3008a8a4",
+        "page": "",
+        "ui": "",
+        "name": "Radar-Ansichtc",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<div style=\"width: 100%; min-width: 280px; max-width: 450px; height: 420px; margin: 5px auto; padding: 10px; position: relative; display: flex; flex-direction: column; justify-content: space-between;\">\n  \n  <!-- Das Koordinatensystem/Radar (Skala erweitert auf 6m) -->\n  <svg viewBox=\"0 0 100 125\" style=\"width: 100%; height: 350px; display: block; overflow: visible;\">\n    <defs>\n      <filter x=\"0\" y=\"0\" width=\"1\" height=\"1\" id=\"bg-text\">\n        <feFlood flood-color=\"var(--sys-bg-default, #111)\" flood-opacity=\"0.7\"/>\n        <feComposite in=\"SourceGraphic\" operator=\"over\"/>\n      </filter>\n    </defs>\n\n    <!-- Feste Hintergrundringe -->\n    <circle cx=\"50\" cy=\"125\" r=\"41.67\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"81.33\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">2m</text>\n\n    <circle cx=\"50\" cy=\"125\" r=\"83.33\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"39.67\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">4m</text>\n    \n    <circle cx=\"50\" cy=\"125\" r=\"125\" fill=\"none\" stroke=\"var(--sys-border-default, #666)\" stroke-width=\"0.8\" />\n    <text x=\"50\" y=\"-2\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">6m</text>\n    \n    <line x1=\"50\" y1=\"0\" x2=\"50\" y2=\"125\" stroke=\"var(--sys-border-subtle, #333)\" stroke-width=\"0.5\" />\n    <circle cx=\"50\" cy=\"125\" r=\"2.5\" fill=\"#ff9900\" />\n    <text x=\"54\" y=\"124\" fill=\"#ff9900\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\">RD-03D</text>\n\n    <!-- Hier werden die Targets gezeichnet -->\n    <g v-for=\"t in msg.payload.targets\" :key=\"t.id\">\n      <g v-if=\"t.visible\">\n        <circle :cx=\"t.x\" :cy=\"t.y\" r=\"3\" fill=\"#00ff00\" stroke=\"#ffffff\" stroke-width=\"0.5\" />\n        <text :x=\"t.x + 4\" :y=\"t.y + 1\" fill=\"#00ff00\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\">\n          ID:{{t.id}} ({{t.s}})\n        </text>\n      </g>\n    </g>\n  </svg>\n\n  <!-- Auffälliges Signal-Banner -->\n  <div :style=\"{\n         width: '100%', \n         padding: '10px 0', \n         borderRadius: '6px', \n         textAlign: 'center', \n         fontWeight: 'bold', \n         fontSize: '16px',\n         color: '#ffffff',\n         letterSpacing: '1px',\n         transition: 'all 0.3s ease',\n         backgroundColor: msg.payload.alertStatus === 'ON' ? '#ff3b30' : '#34c759',\n         boxShadow: msg.payload.alertStatus === 'ON' ? '0 0 12px #ff3b30' : 'none'\n       }\">\n    {{ msg.payload.alertStatus === 'ON' ? '⚠️ TARGET ERKANNT (ON)' : '✅ BEREICH FREI (OFF)' }}\n  </div>\n\n</div>\n",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 740,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5413752d31c20cbe",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Prozentumrechnungxyza Var 2",
+        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\nconst svgWidth = 100; // ca. 33% mehr Dehnung,  statt 100;\nconst svgHeight = 125;\nconst scale = svgHeight / 6000;\n\nconst targetMap = {};\nfor (let t of targets) {\n    targetMap[t.id] = t;\n}\n\n// Hilfsvariable für den geringsten Y-Abstand in mm (Start bei unendlich)\nlet minMillimeterY = Infinity; \n\nfor (let i = 0; i < 3; i++) {\n    let target = targetMap[i];\n    \n    if (target) {\n        let xPixel = 50 + (target.x * scale * 1.6); // x-Dehnfaktor\n        let yPixel = svgHeight - (target.y * scale);\n        \n        let xPercent = (xPixel / svgWidth) * 100;\n        let yPercent = (yPixel / svgHeight) * 100;\n        \n        // Finde das Target mit dem geringsten Abstand (target.y ist der echte mm-Wert)\n        if (target.y < minMillimeterY) {\n            minMillimeterY = target.y;\n        }\n\n        processedTargets.push({\n            id: i,\n            x: Number(xPixel.toFixed(2)),\n            y: Number(yPixel.toFixed(2)),\n            px: Number(xPercent.toFixed(2)),\n            py: Number(yPercent.toFixed(2)),\n            s: target.s ?? 0,\n            visible: true\n        });\n    } else {\n        processedTargets.push({\n            id: i,\n            visible: false\n        });\n    }\n}\n\n// Zonen-Logik basierend auf den echten Millimeter-Werten\nlet distZone = \"NONE\";\nlet minDist = 0;\n\nif (minMillimeterY !== Infinity) {\n    minDist = minMillimeterY; // Gibt den minimalen Abstand in mm aus\n    \n    if (minDist <= 2000) {\n        distZone = \"NEAR\";       // 0m bis 2m\n    } else if (minDist <= 4000) {\n        distZone = \"MEDIUM\";     // >2m bis 4m\n    } else {\n        distZone = \"FAR\";        // >4m bis 6m\n    }\n}\n\nmsg.payload = {\n    targets: processedTargets,\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\",\n    minDist: minDist, // minimaler Abstand in mm\n    distZone: distZone // \"NEAR\", \"MEDIUM\", \"FAR\" oder \"NONE\"\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "8d46b411eec30899",
+                "73b9e7f2f78f62c1",
+                "6b238684a9c91bdd"
+            ]
+        ]
+    },
+    {
+        "id": "73b9e7f2f78f62c1",
+        "type": "switch",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "property": "payload.distZone",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "NEAR",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "MEDIUM",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "FAR",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "NONE",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 690,
+        "y": 160,
+        "wires": [
+            [
+                "d6c0fdfe1efe8e38"
+            ],
+            [
+                "459bd921c7ba2f52"
+            ],
+            [
+                "e5b45e79aa8ddc3c"
+            ],
+            [
+                "d638dd154e3e1f66"
+            ]
+        ]
+    },
+    {
+        "id": "e5b45e79aa8ddc3c",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "START-FAR",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.source",
+                "pt": "msg",
+                "to": "/Trackera.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "/Trackera.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "paylod",
+                "pt": "msg",
+                "to": "play",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.loop",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 870,
+        "y": 200,
+        "wires": [
+            [
+                "8d8805f57af57797"
+            ]
+        ]
+    },
+    {
+        "id": "459bd921c7ba2f52",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "START-MEDIUM",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.source",
+                "pt": "msg",
+                "to": "/Trackerb.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "/Trackerb.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "paylod",
+                "pt": "msg",
+                "to": "play",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.loop",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 160,
+        "wires": [
+            [
+                "8d8805f57af57797"
+            ]
+        ]
+    },
+    {
+        "id": "d6c0fdfe1efe8e38",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "START-NEAR",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.source",
+                "pt": "msg",
+                "to": "/Trackerc.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "/Trackerc.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "paylod",
+                "pt": "msg",
+                "to": "play",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.loop",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 880,
+        "y": 120,
+        "wires": [
+            [
+                "8d8805f57af57797"
+            ]
+        ]
+    },
+    {
+        "id": "d638dd154e3e1f66",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "STOPP",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "stop",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 240,
+        "wires": [
+            [
+                "8d8805f57af57797"
+            ]
+        ]
+    },
+    {
+        "id": "8d8805f57af57797",
+        "type": "ui-audio",
+        "z": "ac4cb02db15fb728",
+        "group": "75b15bea3008a8a4",
+        "ui": "",
+        "name": "",
+        "order": 1,
+        "width": "2",
+        "height": "1",
+        "mode": "src",
+        "voice": "",
+        "src": "",
+        "autoplay": "on",
+        "loop": "on",
+        "muted": "off",
+        "className": "",
+        "x": 1080,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6b238684a9c91bdd",
+        "type": "debug",
+        "z": "ac4cb02db15fb728",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 300,
+        "wires": []
+    }
+]
