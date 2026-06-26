@@ -356,7 +356,7 @@
         "page": "",
         "ui": "",
         "name": "Ansicht 1 Sensor",
-        "order": 2,
+        "order": 3,
         "width": 0,
         "height": 0,
         "head": "",
@@ -744,8 +744,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 970,
-        "y": 880,
+        "x": 890,
+        "y": 960,
         "wires": [
             []
         ]
@@ -814,7 +814,7 @@
         "page": "",
         "ui": "",
         "name": "Ansicht Multi Sensor",
-        "order": 3,
+        "order": 5,
         "width": 0,
         "height": 0,
         "head": "",
@@ -824,7 +824,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1000,
+        "x": 1040,
         "y": 740,
         "wires": [
             []
@@ -888,7 +888,7 @@
         "type": "function",
         "z": "ac4cb02db15fb728",
         "name": "Globale Daten ",
-        "func": "// 1. Die sensorid aus der aktuellen Payload auslesen\nlet sensorId = msg.payload.sensorid;\n\n// 2. Den globalen Context \"sensorConfig\" abrufen\nlet sensorConfig = global.get(\"sensorConfig\") || {};\n\n// 3. Die passenden Sensordaten aus der Tabelle holen\nlet config = sensorConfig[sensorId];\n\n// 4. Wenn der Sensor in der Tabelle existiert, die Felder ergänzen\nif (config) {\n    msg.payload.offsetX = config.offsetX;\n    msg.payload.offsetY = config.offsetY;\n    msg.payload.winkel = config.winkel;\n    msg.payload.sensorBez = config.sensorBez;\n}\n\nreturn msg;\n",
+        "func": "// 1. Die sensorid aus der aktuellen Payload auslesen\nlet sensorId = msg.payload.sensorid;\n\n// 2. Den globalen Context \"sensorConfig\" abrufen\nlet sensorConfig = global.get(\"sensorConfig\") || {};\n\n// 3. Die passenden Sensordaten aus der Tabelle holen\nlet config = sensorConfig[sensorId];\n\n// 4. Wenn der Sensor in der Tabelle existiert, die Felder ergänzen\nif (config) {\n    msg.payload.offsetX = config.offsetX;\n    msg.payload.offsetY = config.offsetY;\n    msg.payload.winkel = config.winkel;\n    msg.payload.sensorBez = config.sensorBez;\n}\nmsg.payload.occupancy =  msg.payload.targets.length > 0 ? 1 : 0 ;\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -920,7 +920,8 @@
         "wires": [
             [
                 "6caee2d653a0c467",
-                "c6af5deaf9f1f04f"
+                "c6af5deaf9f1f04f",
+                "afab3921f42d31c2"
             ]
         ]
     },
@@ -928,11 +929,12 @@
         "id": "56e805ca128e541a",
         "type": "ui-template",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "group": "75b15bea3008a8a4",
         "page": "",
         "ui": "",
         "name": "Ansicht Multi Sensor",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "head": "",
@@ -944,6 +946,165 @@
         "className": "",
         "x": 640,
         "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "afab3921f42d31c2",
+        "type": "switch",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "property": "payload.occupancy",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 950,
+        "y": 820,
+        "wires": [
+            [
+                "74f257607f4db059"
+            ],
+            [
+                "06d45f0b91f5656f"
+            ]
+        ]
+    },
+    {
+        "id": "74f257607f4db059",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "START-FAR-Sound",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.source",
+                "pt": "msg",
+                "to": "/Trackera.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "/Trackera.mp3",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "paylod",
+                "pt": "msg",
+                "to": "play",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.loop",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 820,
+        "wires": [
+            [
+                "6422489bdef6845a"
+            ]
+        ]
+    },
+    {
+        "id": "06d45f0b91f5656f",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "STOPP",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ui_update.autoplay",
+                "pt": "msg",
+                "to": "off",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ui_update.muted",
+                "pt": "msg",
+                "to": "on",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "stop",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1100,
+        "y": 880,
+        "wires": [
+            [
+                "6422489bdef6845a"
+            ]
+        ]
+    },
+    {
+        "id": "6422489bdef6845a",
+        "type": "ui-audio",
+        "z": "ac4cb02db15fb728",
+        "group": "75b15bea3008a8a4",
+        "ui": "",
+        "name": "",
+        "order": 2,
+        "width": "2",
+        "height": "1",
+        "mode": "src",
+        "voice": "",
+        "src": "",
+        "autoplay": "on",
+        "loop": "on",
+        "muted": "off",
+        "className": "",
+        "x": 1340,
+        "y": 840,
         "wires": [
             []
         ]
