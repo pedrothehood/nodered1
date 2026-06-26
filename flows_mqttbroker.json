@@ -139,6 +139,7 @@
         "id": "d569f7754aa41cd6",
         "type": "mqtt in",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "name": "mqtt-radar",
         "topic": "esp32/radar/attributes/rd06d-04",
         "qos": "0",
@@ -148,8 +149,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 100,
-        "y": 400,
+        "x": 177,
+        "y": 396,
         "wires": [
             [
                 "5413752d31c20cbe"
@@ -198,6 +199,7 @@
         "id": "64eb6d0c16c4bc91",
         "type": "mqtt in",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "name": "mqtt-radar-Occupancy",
         "topic": "esp32/radar/occupancy/rd06d-04",
         "qos": "0",
@@ -349,21 +351,22 @@
         "id": "8d46b411eec30899",
         "type": "ui-template",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "group": "75b15bea3008a8a4",
         "page": "",
         "ui": "",
-        "name": "Radar-Ansichtc",
+        "name": "Ansicht 1 Sensor",
         "order": 2,
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<div style=\"width: 100%; min-width: 280px; max-width: 450px; height: 420px; margin: 5px auto; padding: 10px; position: relative; display: flex; flex-direction: column; justify-content: space-between;\">\n  \n  <!-- Das Koordinatensystem/Radar (Skala erweitert auf 6m) -->\n  <svg viewBox=\"0 0 100 125\" style=\"width: 100%; height: 350px; display: block; overflow: visible;\">\n    <defs>\n      <filter x=\"0\" y=\"0\" width=\"1\" height=\"1\" id=\"bg-text\">\n        <feFlood flood-color=\"var(--sys-bg-default, #111)\" flood-opacity=\"0.7\"/>\n        <feComposite in=\"SourceGraphic\" operator=\"over\"/>\n      </filter>\n    </defs>\n\n    <!-- Feste Hintergrundringe -->\n    <circle cx=\"50\" cy=\"125\" r=\"41.67\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"81.33\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">2m</text>\n\n    <circle cx=\"50\" cy=\"125\" r=\"83.33\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"39.67\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">4m</text>\n    \n    <circle cx=\"50\" cy=\"125\" r=\"125\" fill=\"none\" stroke=\"var(--sys-border-default, #666)\" stroke-width=\"0.8\" />\n    <text x=\"50\" y=\"-2\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">6m</text>\n    \n    <line x1=\"50\" y1=\"0\" x2=\"50\" y2=\"125\" stroke=\"var(--sys-border-subtle, #333)\" stroke-width=\"0.5\" />\n    <circle cx=\"50\" cy=\"125\" r=\"2.5\" fill=\"#ff9900\" />\n    <text x=\"54\" y=\"124\" fill=\"#ff9900\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\">RD-03D</text>\n\n    <!-- Hier werden die Targets gezeichnet -->\n    <g v-for=\"t in msg.payload.targets\" :key=\"t.id\">\n      <g v-if=\"t.visible\">\n        <circle :cx=\"t.x\" :cy=\"t.y\" r=\"3\" fill=\"#00ff00\" stroke=\"#ffffff\" stroke-width=\"0.5\" />\n        <text :x=\"t.x + 4\" :y=\"t.y + 1\" fill=\"#00ff00\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\">\n          ID:{{t.id}} ({{t.s}})\n        </text>\n      </g>\n    </g>\n  </svg>\n\n  <!-- Auffälliges Signal-Banner -->\n  <div :style=\"{\n         width: '100%', \n         padding: '10px 0', \n         borderRadius: '6px', \n         textAlign: 'center', \n         fontWeight: 'bold', \n         fontSize: '16px',\n         color: '#ffffff',\n         letterSpacing: '1px',\n         transition: 'all 0.3s ease',\n         backgroundColor: msg.payload.alertStatus === 'ON' ? '#ff3b30' : '#34c759',\n         boxShadow: msg.payload.alertStatus === 'ON' ? '0 0 12px #ff3b30' : 'none'\n       }\">\n    {{ msg.payload.alertStatus === 'ON' ? '⚠️ TARGET ERKANNT (ON)' : '✅ BEREICH FREI (OFF)' }}\n  </div>\n\n</div>\n",
+        "format": "<div style=\"width: 100%; min-width: 280px; max-width: 450px; height: 420px; margin: 5px auto; padding: 10px; position: relative; display: flex; flex-direction: column; justify-content: space-between;\">\n  \n  <!-- Das Koordinatensystem/Radar (Skala erweitert auf 6m) -->\n  <svg viewBox=\"0 0 100 125\" style=\"width: 100%; height: 350px; display: block; overflow: visible;\">\n    <defs>\n      <filter x=\"0\" y=\"0\" width=\"1\" height=\"1\" id=\"bg-text\">\n        <feFlood flood-color=\"var(--sys-bg-default, #111)\" flood-opacity=\"0.7\"/>\n        <feComposite in=\"SourceGraphic\" operator=\"over\"/>\n      </filter>\n    </defs>\n\n    <!-- Feste Hintergrundringe -->\n    <circle cx=\"50\" cy=\"125\" r=\"41.67\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"81.33\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">2m</text>\n\n    <circle cx=\"50\" cy=\"125\" r=\"83.33\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"39.67\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">4m</text>\n    \n    <circle cx=\"50\" cy=\"125\" r=\"125\" fill=\"none\" stroke=\"var(--sys-border-default, #666)\" stroke-width=\"0.8\" />\n    <text x=\"50\" y=\"-2\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">6m</text>\n    \n    <line x1=\"50\" y1=\"0\" x2=\"50\" y2=\"125\" stroke=\"var(--sys-border-subtle, #333)\" stroke-width=\"0.5\" />\n    <circle cx=\"50\" cy=\"125\" r=\"2.5\" fill=\"#ff9900\" />\n   \n<text x=\"54\" y=\"124\" fill=\"#ff9900\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\">{{ msg.payload.sensorid\n  }}</text>\n    <!-- Hier werden die Targets gezeichnet -->\n    <g v-for=\"t in msg.payload.targets\" :key=\"t.id\">\n      <g v-if=\"t.visible\">\n        <circle :cx=\"t.x\" :cy=\"t.y\" r=\"3\" fill=\"#00ff00\" stroke=\"#ffffff\" stroke-width=\"0.5\" />\n        <text :x=\"t.x + 4\" :y=\"t.y + 1\" fill=\"#00ff00\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\">\n          ID:{{t.id}} ({{t.s}})\n        </text>\n      </g>\n    </g>\n  </svg>\n\n  <!-- Auffälliges Signal-Banner -->\n  <!-- Auffälliges Signal-Banner (verkleinert und weniger breit) -->\n  <div\n    :style=\"{ width: '80%', margin: '0 auto', padding: '6px 0', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#ffffff', letterSpacing: '0.5px', transition: 'all 0.3s ease', backgroundColor: msg.payload.alertStatus === 'ON' ? '#ff3b30' : '#34c759', boxShadow: msg.payload.alertStatus === 'ON' ? '0 0 8px #ff3b30' : 'none' }\">\n    {{ msg.payload.alertStatus === 'ON' ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n  </div>\n\n</div>\n",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 740,
+        "x": 770,
         "y": 400,
         "wires": [
             []
@@ -373,16 +376,16 @@
         "id": "5413752d31c20cbe",
         "type": "function",
         "z": "ac4cb02db15fb728",
-        "name": "Prozentumrechnung",
-        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\nconst svgWidth = 100; // ca. 33% mehr Dehnung,  statt 100;\nconst svgHeight = 125;\nconst scale = svgHeight / 6000;\n\nconst targetMap = {};\nfor (let t of targets) {\n    targetMap[t.id] = t;\n}\n\n// Hilfsvariable für den geringsten Y-Abstand in mm (Start bei unendlich)\nlet minMillimeterY = Infinity; \n\nfor (let i = 0; i < 3; i++) {\n    let target = targetMap[i];\n    \n    if (target) {\n        let xPixel = 50 + (target.x * scale * 1.6); // x-Dehnfaktor\n        let yPixel = svgHeight - (target.y * scale);\n        \n        let xPercent = (xPixel / svgWidth) * 100;\n        let yPercent = (yPixel / svgHeight) * 100;\n        \n        // Finde das Target mit dem geringsten Abstand (target.y ist der echte mm-Wert)\n        if (target.y < minMillimeterY) {\n            minMillimeterY = target.y;\n        }\n\n        processedTargets.push({\n            id: i,\n            x: Number(xPixel.toFixed(2)),\n            y: Number(yPixel.toFixed(2)),\n            px: Number(xPercent.toFixed(2)),\n            py: Number(yPercent.toFixed(2)),\n            s: target.s ?? 0,\n            visible: true\n        });\n    } else {\n        processedTargets.push({\n            id: i,\n            visible: false\n        });\n    }\n}\n\n// Zonen-Logik basierend auf den echten Millimeter-Werten\nlet distZone = \"NONE\";\nlet minDist = 0;\n\nif (minMillimeterY !== Infinity) {\n    minDist = minMillimeterY; // Gibt den minimalen Abstand in mm aus\n    \n    if (minDist <= 2000) {\n        distZone = \"NEAR\";       // 0m bis 2m\n    } else if (minDist <= 4000) {\n        distZone = \"MEDIUM\";     // >2m bis 4m\n    } else {\n        distZone = \"FAR\";        // >4m bis 6m\n    }\n}\n\nmsg.payload = {\n    targets: processedTargets,\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\",\n    minDist: minDist, // minimaler Abstand in mm\n    distZone: distZone // \"NEAR\", \"MEDIUM\", \"FAR\" oder \"NONE\"\n};\n\nreturn msg;\n",
+        "name": "Umrechnung 1 Sensor",
+        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\nconst svgWidth = 100; // ca. 33% mehr Dehnung,  statt 100;\nconst svgHeight = 125;\nconst scale = svgHeight / 6000;\n\nconst targetMap = {};\nfor (let t of targets) {\n    targetMap[t.id] = t;\n}\n\n// Hilfsvariable für den geringsten Y-Abstand in mm (Start bei unendlich)\nlet minMillimeterY = Infinity; \n\nfor (let i = 0; i < 3; i++) {\n    let target = targetMap[i];\n    \n    if (target) {\n        let xPixel = 50 + (target.x * scale * 1.6); // x-Dehnfaktor\n        let yPixel = svgHeight - (target.y * scale);\n        \n        let xPercent = (xPixel / svgWidth) * 100;\n        let yPercent = (yPixel / svgHeight) * 100;\n        \n        // Finde das Target mit dem geringsten Abstand (target.y ist der echte mm-Wert)\n        if (target.y < minMillimeterY) {\n            minMillimeterY = target.y;\n        }\n\n        processedTargets.push({\n            id: i,\n            x: Number(xPixel.toFixed(2)),\n            y: Number(yPixel.toFixed(2)),\n            px: Number(xPercent.toFixed(2)),\n            py: Number(yPercent.toFixed(2)),\n            s: target.s ?? 0,\n            visible: true\n        });\n    } else {\n        processedTargets.push({\n            id: i,\n            visible: false\n        });\n    }\n}\n\n// Zonen-Logik basierend auf den echten Millimeter-Werten\nlet distZone = \"NONE\";\nlet minDist = 0;\n// last segment nach \"/\"\nconst parts = (msg.topic || \"\").split('/');\nmsg.sensorid = parts[parts.length - 1];\nif (minMillimeterY !== Infinity) {\n    minDist = minMillimeterY; // Gibt den minimalen Abstand in mm aus\n    \n    if (minDist <= 2000) {\n        distZone = \"NEAR\";       // 0m bis 2m\n    } else if (minDist <= 4000) {\n        distZone = \"MEDIUM\";     // >2m bis 4m\n    } else {\n        distZone = \"FAR\";        // >4m bis 6m\n    }\n}\n\nmsg.payload = {\n    targets: processedTargets,\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\",\n    minDist: minDist, // minimaler Abstand in mm\n    distZone: distZone, // \"NEAR\", \"MEDIUM\", \"FAR\" oder \"NONE\"\n    sensorid: msg.sensorid\n};\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 420,
-        "y": 280,
+        "x": 437,
+        "y": 276,
         "wires": [
             [
                 "8d46b411eec30899",
@@ -423,8 +426,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 4,
-        "x": 690,
-        "y": 160,
+        "x": 707,
+        "y": 156,
         "wires": [
             [
                 "d6c0fdfe1efe8e38"
@@ -494,8 +497,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 870,
-        "y": 200,
+        "x": 887,
+        "y": 196,
         "wires": [
             [
                 "8d8805f57af57797"
@@ -556,8 +559,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 890,
-        "y": 160,
+        "x": 907,
+        "y": 156,
         "wires": [
             [
                 "8d8805f57af57797"
@@ -618,8 +621,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 880,
-        "y": 120,
+        "x": 897,
+        "y": 116,
         "wires": [
             [
                 "8d8805f57af57797"
@@ -659,8 +662,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 860,
-        "y": 240,
+        "x": 877,
+        "y": 236,
         "wires": [
             [
                 "8d8805f57af57797"
@@ -671,6 +674,7 @@
         "id": "8d8805f57af57797",
         "type": "ui-audio",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "group": "75b15bea3008a8a4",
         "ui": "",
         "name": "",
@@ -684,8 +688,8 @@
         "loop": "on",
         "muted": "off",
         "className": "",
-        "x": 1080,
-        "y": 180,
+        "x": 1097,
+        "y": 176,
         "wires": [
             []
         ]
@@ -695,6 +699,158 @@
         "type": "debug",
         "z": "ac4cb02db15fb728",
         "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 847,
+        "y": 296,
+        "wires": []
+    },
+    {
+        "id": "583062c81ff4dcde",
+        "type": "mqtt in",
+        "z": "ac4cb02db15fb728",
+        "name": "MQTT-Multi-Radar",
+        "topic": "esp32/radar/attributes/#",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "dc06f9f26c4c93cd",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 740,
+        "wires": [
+            [
+                "2065c5acdab784c6"
+            ]
+        ]
+    },
+    {
+        "id": "2717b4e108d63878",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Umrechnung Multi Sensor",
+        "func": "// Ausschaltverzögerung in Millisekunden (5 Sekunden)\nconst OFF_DELAY = 5000;\n\n// 1. Speicher aus dem Kontext holen\nlet sensorRegister = context.get('sensorRegister') || {};\nlet currentStatus = context.get('currentStatus') || 'OFF';\nlet offTimer = context.get('offTimer') || null;\n\n// 2. Eingehende Daten direkt aus msg.payload lesen\nlet incoming = msg.payload;\nif (typeof incoming === \"string\") {\n    try { incoming = JSON.parse(incoming); } catch(e) { incoming = {}; }\n}\n\n// 3. Sensor-ID und Konfigurationsdaten direkt aus der Payload extrahieren\nlet id = incoming.sensorid;\n\nif (id) {\n    // Falls Daten fehlen, Fallbacks nutzen\n    const config = {\n        sensorBez: incoming.sensorBez || \"Unbekannter Sensor\",\n        offsetX: typeof incoming.offsetX === \"number\" ? incoming.offsetX : 0,\n        offsetY: typeof incoming.offsetY === \"number\" ? incoming.offsetY : 0,\n        winkel: typeof incoming.winkel === \"number\" ? incoming.winkel : 0\n    };\n\n    // Original-Targets holen (Struktur: incoming.targets)\n    let rawTargets = incoming.targets || [];\n    let transformedTargets = [];\n\n    // MATHEMATISCHE BERECHNUNG DER TARGET-POSITIONEN\n    rawTargets.forEach(t => {\n        // Winkel in Bogenmass umrechnen\n        let alpha = config.winkel * Math.PI / 180;\n        \n        // Bezugspunkt-Korrektur (Übernommen aus Originalcode)\n        let relX = t.x - 50;\n        let relY = 125 - t.y; \n        \n        // Rotationsmatrix anwenden\n        let rotX = relX * Math.cos(alpha) + relY * Math.sin(alpha);\n        let rotY = relX * Math.sin(alpha) - relY * Math.cos(alpha);\n        \n        // Globale Position auf dem Hausplan berechnen\n        let finalX = config.offsetX + rotX;\n        let finalY = config.offsetY - rotY;\n\n        // Objekt befüllen (Feld \"visible\" entfernt, da im Input nicht vorhanden)\n        transformedTargets.push({\n            id: t.id,\n            x: Math.round(finalX),\n            y: Math.round(finalY),\n            s: t.s // Grösse/Status mitsichern\n        });\n    });\n\n    // Sensor im Register aktualisieren\n    sensorRegister[id] = {\n        sensorid: id,\n        sensorBez: config.sensorBez,\n        offsetX: config.offsetX,\n        offsetY: config.offsetY,\n        winkel: config.winkel,\n        targets: transformedTargets\n    };\n}\n\ncontext.set('sensorRegister', sensorRegister);\n\n// 4. Prüfen, ob aktuell IRGENDEIN Sensor ein echtes Target sieht\nconst sensorArray = Object.values(sensorRegister);\nconst rawTargetDetected = sensorArray.some(sensor => \n    sensor.targets && sensor.targets.length > 0\n);\n\n// 5. Verzögerungs-Logik (Debounce)\nif (rawTargetDetected) {\n    if (offTimer) {\n        clearTimeout(offTimer);\n        context.set('offTimer', null);\n    }\n    currentStatus = 'ON';\n    context.set('currentStatus', currentStatus);\n    \n    msg.payload = { sensors: sensorArray, globalAlertStatus: currentStatus };\n    node.send(msg);\n} else {\n    if (currentStatus === 'ON') {\n        if (!offTimer) {\n            offTimer = setTimeout(() => {\n                let freshRegister = context.get('sensorRegister') || {};\n                context.set('currentStatus', 'OFF');\n                context.set('offTimer', null);\n                \n                node.send({\n                    payload: {\n                        sensors: Object.values(freshRegister),\n                        globalAlertStatus: 'OFF'\n                    }\n                });\n            }, OFF_DELAY);\n            \n            context.set('offTimer', offTimer);\n        }\n    }\n    \n    msg.payload = { sensors: sensorArray, globalAlertStatus: currentStatus };\n    node.send(msg);\n}\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "471726f70f7b1950",
+        "type": "inject",
+        "z": "ac4cb02db15fb728",
+        "name": "Start Multi Sensor",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 840,
+        "wires": [
+            [
+                "ff46ff8a3cab9510"
+            ]
+        ]
+    },
+    {
+        "id": "ff46ff8a3cab9510",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "name": "Globale Sensor-Konfiguration",
+        "rules": [
+            {
+                "t": "set",
+                "p": "sensorConfig",
+                "pt": "global",
+                "to": "{\"RD06D-04\":{\"offsetX\":350,\"offsetY\":400,\"winkel\":270,\"sensorBez\":\"Terrasse\"},\"rd06d-04\":{\"offsetX\":450,\"offsetY\":400,\"winkel\":90,\"sensorBez\":\"Terrasse/klein\"},\"RD-03D-Flur\":{\"offsetX\":500,\"offsetY\":200,\"winkel\":90,\"sensorBez\":\"Flur Eingang\"},\"RD-03D-Kueche\":{\"offsetX\":120,\"offsetY\":150,\"winkel\":180,\"sensorBez\":\"Küche Esstisch\"}}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 840,
+        "wires": [
+            [
+                "f1815dfcfa20fc8e"
+            ]
+        ]
+    },
+    {
+        "id": "c6af5deaf9f1f04f",
+        "type": "ui-template",
+        "z": "ac4cb02db15fb728",
+        "group": "75b15bea3008a8a4",
+        "page": "",
+        "ui": "",
+        "name": "Ansicht Multi Sensor",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n    <div style=\"width: 100%; min-width: 400px; max-width: 800px; height: 600px; margin: 5px auto; position: relative; border: 1px solid #ccc; overflow: hidden; background-color: #f5f5f5;\">\n        \n        <!-- Hintergrundbild aus dem public-Ordner -->\n        <img :src=\"imageUrl\" \n             @error=\"handleImageError\"\n             style=\"width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;\" />\n        \n        <!-- SVG Overlay -->\n        <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\" style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n            <defs>\n                <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n                    <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\"/>\n                    <feComposite in=\"SourceGraphic\" operator=\"over\"/>\n                </filter>\n            </defs>\n\n            <!-- Haupt-Container für Sensor und Targets (wird gerendert sobald payload da ist) -->\n            <g v-if=\"msg && msg.payload && msg.payload.sensorid\">\n                \n                <!-- 1. DYNAMISCHE SICHTKEULE -->\n                <path d=\"M 0 0 L -108 -62.5 A 125 125 0 0 1 108 -62.5 Z\" \n                      :style=\"{\n                          fill: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#b4b4b4',\n                          fillOpacity: msg.payload.targets && msg.payload.targets.length > 0 ? 0.25 : 0.12,\n                          stroke: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#888888',\n                          strokeWidth: '1.5px',\n                          strokeDasharray: msg.payload.targets && msg.payload.targets.length > 0 ? 'none' : '2,2',\n                          strokeOpacity: 0.6\n                      }\"\n                      :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ') rotate(' + (msg.payload.winkel || 0) + ')'\" />\n                \n                <!-- 2. SENSOR-ZENTRUM -->\n                <circle :cx=\"msg.payload.offsetX || 0\" :cy=\"msg.payload.offsetY || 0\" r=\"6\" style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n                \n                <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n                <g :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ')'\">\n                    <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n                        {{ msg.payload.sensorid }} ({{ msg.payload.winkel }}°)\n                    </text>\n                    <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\" filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n                        {{ msg.payload.sensorBez }}\n                    </text>\n                </g>\n\n                <!-- 4. TARGETS (Ziele): Explizite Positionierung über Gruppen-Transformation für Vue 3 -->\n                <g v-for=\"(t, index) in msg.payload.targets\" :key=\"t.id || index\" :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n                    <!-- Roter Kreis zentriert bei 0,0 der transformierten Gruppe -->\n                    <circle cx=\"0\" cy=\"0\" r=\"7\" style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n                    \n                    <!-- ID-Label daneben platziert -->\n                    <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n                        ID:{{ t.id }} (s:{{ t.s }})\n                    </text>\n                </g>\n\n            </g>\n        </svg>\n    </div>\n\n    <!-- Globaler Status-Balken -->\n    <div v-if=\"msg && msg.payload && msg.payload.targets\"\n         :style=\"{ \n            width: '100%',\n            maxWidth: '800px', \n            margin: '15px auto 0 auto', \n            padding: '8px 0', \n            borderRadius: '4px', \n            textAlign: 'center', \n            fontWeight: 'bold', \n            fontSize: '13px', \n            color: '#ffffff', \n            backgroundColor: msg.payload.targets.length > 0 ? '#ff3b30' : '#34c759'\n         }\">\n        {{ msg.payload.targets.length > 0 ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n    </div>\n</template>\n\n<script>\nexport default {\n    name: 'MultiSensorMap',\n    props: {\n        msg: {\n            type: Object,\n            default: () => ({})\n        }\n    },\n    data() {\n        return {\n            pathPrefix: '/public/' \n        }\n    },\n    computed: {\n        imageUrl() {\n            const protocol = window.location.protocol;\n            const host = window.location.host;\n            return `${protocol}//${host}${this.pathPrefix}Zeichnung.svg`;\n        }\n    },\n    methods: {\n        handleImageError() {\n            if (this.pathPrefix === '/public/') {\n                this.pathPrefix = '/';\n            }\n        }\n    }\n}\n</script>\n",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1020,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f1815dfcfa20fc8e",
+        "type": "debug",
+        "z": "ac4cb02db15fb728",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "6caee2d653a0c467",
+        "type": "debug",
+        "z": "ac4cb02db15fb728",
+        "name": "debug 3",
         "active": true,
         "tosidebar": true,
         "console": true,
@@ -703,8 +859,69 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 830,
-        "y": 300,
+        "x": 930,
+        "y": 680,
         "wires": []
+    },
+    {
+        "id": "2065c5acdab784c6",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Ergänzen mit Sensorid",
+        "func": "// 1. FEHLERSCHUTZ: Falls die Payload noch Text ist, in JSON umwandeln\nif (typeof msg.payload === \"string\") {\n    try {\n        msg.payload = JSON.parse(msg.payload);\n    } catch(e) {\n        node.error(\"Payload ist kein gültiges JSON: \" + msg.payload);\n        return msg;\n    }\n}\n\n// 2. Sensor-ID aus dem Topic holen\n// Falls msg.topic leer oder kein String ist, nutzen wir einen Fallback (\"unbekannt\")\nlet sensorId = \"unbekannt\";\nif (msg.topic && typeof msg.topic === \"string\") {\n    let topicParts = msg.topic.split('/');\n    // Filtert leere Einträge (falls das Topic mit / endet)\n    topicParts = topicParts.filter(part => part.length > 0); \n    if (topicParts.length > 0) {\n        sensorId = topicParts[topicParts.length - 1];\n    }\n}\n\n// 3. Sensor-ID in das Array einfügen\nif (Array.isArray(msg.payload)) {\n    msg.payload = msg.payload.map(item => {\n        if (typeof item === 'object' && item !== null) {\n            item.sensorid = sensorId; // Fügt das Feld direkt hinzu\n        }\n        return item;\n    });\n} else if (typeof msg.payload === 'object' && msg.payload !== null) {\n    // Falls es doch kein Array, sondern ein einzelnes Objekt ist\n    msg.payload.sensorid = sensorId;\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 740,
+        "wires": [
+            [
+                "5ca5501de76f4c18"
+            ]
+        ]
+    },
+    {
+        "id": "5ca5501de76f4c18",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Globale Daten ",
+        "func": "// 1. Die sensorid aus der aktuellen Payload auslesen\nlet sensorId = msg.payload.sensorid;\n\n// 2. Den globalen Context \"sensorConfig\" abrufen\nlet sensorConfig = global.get(\"sensorConfig\") || {};\n\n// 3. Die passenden Sensordaten aus der Tabelle holen\nlet config = sensorConfig[sensorId];\n\n// 4. Wenn der Sensor in der Tabelle existiert, die Felder ergänzen\nif (config) {\n    msg.payload.offsetX = config.offsetX;\n    msg.payload.offsetY = config.offsetY;\n    msg.payload.winkel = config.winkel;\n    msg.payload.sensorBez = config.sensorBez;\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 740,
+        "wires": [
+            [
+                "84b5a61436c0abe5"
+            ]
+        ]
+    },
+    {
+        "id": "84b5a61436c0abe5",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "Umrechnung Offsets, Winkel",
+        "func": "// ==================== KALIBRIERUNG ====================\n// MASSSTAB: Wie viele Pixel auf der Zeichnung entsprechen einer Sensor-Einheit?\n// Wenn der Sensor in cm misst und deine Zeichnung 800px breit ist, versuche z.B. 0.5 oder 0.2\nconst SCALE = 0.05; \n\n// SENSOR-URSPRUNG: Werkseitiger Mittelpunkt der Hardware (LD2410 Standard: X=50, Y=125)\nconst HARDWARE_CENTER_X = 50;\nconst HARDWARE_CENTER_Y = 125;\n// ======================================================\n\nlet incoming = msg.payload;\nif (typeof incoming === \"string\") {\n    try { incoming = JSON.parse(incoming); } catch(e) { return msg; }\n}\n\nlet offsetX = typeof incoming.offsetX === \"number\" ? incoming.offsetX : 0;\nlet offsetY = typeof incoming.offsetY === \"number\" ? incoming.offsetY : 0;\nlet winkel = typeof incoming.winkel === \"number\" ? incoming.winkel : 0;\n\nif (incoming.targets && Array.isArray(incoming.targets)) {\n    incoming.targets = incoming.targets.map(t => {\n        let alpha = winkel * Math.PI / 180;\n        \n        // 1. Relativen Abstand zum Hardware-Nullpunkt berechnen\n        let relX = t.x - HARDWARE_CENTER_X;\n        let relY = HARDWARE_CENTER_Y - t.y; \n        \n        // 2. Den Massstab auf die relative Distanz anwenden (Skalierung)\n        relX = relX * SCALE;\n        relY = relY * SCALE;\n        \n        // 3. Rotationsmatrix anwenden (Winkel-Drehung)\n        let rotX = relX * Math.cos(alpha) + relY * Math.sin(alpha);\n        let rotY = relX * Math.sin(alpha) - relY * Math.cos(alpha);\n        \n        // 4. Globale Position auf dem Hausplan (SVG-Pixel) berechnen\n        let finalX = offsetX + rotX;\n        let finalY = offsetY - rotY;\n\n        return {\n            id: t.id,\n            s: t.s,\n            x: Math.round(finalX),\n            y: Math.round(finalY)\n        };\n    });\n}\n\nmsg.payload = incoming;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 740,
+        "wires": [
+            [
+                "6caee2d653a0c467",
+                "c6af5deaf9f1f04f"
+            ]
+        ]
     }
 ]
