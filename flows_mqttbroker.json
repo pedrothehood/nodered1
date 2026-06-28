@@ -389,8 +389,7 @@
         "wires": [
             [
                 "8d46b411eec30899",
-                "73b9e7f2f78f62c1",
-                "6b238684a9c91bdd"
+                "73b9e7f2f78f62c1"
             ]
         ]
     },
@@ -695,23 +694,6 @@
         ]
     },
     {
-        "id": "6b238684a9c91bdd",
-        "type": "debug",
-        "z": "ac4cb02db15fb728",
-        "name": "debug 1",
-        "active": false,
-        "tosidebar": true,
-        "console": true,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 847,
-        "y": 296,
-        "wires": []
-    },
-    {
         "id": "583062c81ff4dcde",
         "type": "mqtt in",
         "z": "ac4cb02db15fb728",
@@ -744,8 +726,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 890,
-        "y": 960,
+        "x": 450,
+        "y": 1000,
         "wires": [
             []
         ]
@@ -771,8 +753,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 170,
-        "y": 840,
+        "x": 150,
+        "y": 820,
         "wires": [
             [
                 "ff46ff8a3cab9510"
@@ -789,7 +771,7 @@
                 "t": "set",
                 "p": "sensorConfig",
                 "pt": "global",
-                "to": "{\"RD06D-04\":{\"offsetX\":350,\"offsetY\":400,\"winkel\":270,\"sensorBez\":\"Terrasse\"},\"rd06d-04\":{\"offsetX\":360,\"offsetY\":330,\"winkel\":230,\"sensorBez\":\"Terrasse/klein\"},\"RD-03D-Flur\":{\"offsetX\":500,\"offsetY\":200,\"winkel\":90,\"sensorBez\":\"Flur Eingang\"},\"RD-03D-Kueche\":{\"offsetX\":120,\"offsetY\":150,\"winkel\":180,\"sensorBez\":\"Küche Esstisch\"}}",
+                "to": "{\"rd06d_05\":{\"offsetX\":650,\"offsetY\":200,\"winkel\":30,\"sensorBez\":\"Haupteingang\"},\"rd06d-04\":{\"offsetX\":360,\"offsetY\":330,\"winkel\":220,\"sensorBez\":\"Terrasse/klein\"},\"RD-03D-Flur\":{\"offsetX\":500,\"offsetY\":200,\"winkel\":90,\"sensorBez\":\"Flur Eingang\"},\"RD-03D-Kueche\":{\"offsetX\":120,\"offsetY\":150,\"winkel\":180,\"sensorBez\":\"Küche Esstisch\"}}",
                 "tot": "json"
             }
         ],
@@ -798,8 +780,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 410,
-        "y": 840,
+        "x": 390,
+        "y": 820,
         "wires": [
             [
                 "f1815dfcfa20fc8e"
@@ -814,17 +796,17 @@
         "page": "",
         "ui": "",
         "name": "Ansicht Multi Sensor",
-        "order": 5,
+        "order": 4,
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<template>\n    <div\n        style=\"width: 100%; min-width: 400px; max-width: 800px; height: 600px; margin: 5px auto; position: relative; border: 1px solid #ccc; overflow: hidden; background-color: #f5f5f5;\">\n\n        <!-- WRAPPER: Verschiebt das Hintergrundbild UND das SVG-Overlay absolut synchron (10% = 80px nach rechts, 20px nach unten) -->\n            <div     style=\"position: absolute; top: 80px; left: 80px; width: 100%; height: 100%; transform: scale(0.9); transform-origin: top left;\">\n            <!-- Hintergrundbild aus dem public-Ordner -->\n            <img :src=\"imageUrl\"\n                 @error=\"handleImageError\"\n                 style=\"width: 80%; height: 80%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;\" />\n\n            <!-- SVG Overlay mit W3C-konformem Namespace und Standard-viewBox -->\n            <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\"\n                style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n                <defs>\n                    <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n                        <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\" />\n                        <feComposite in=\"SourceGraphic\" operator=\"over\" />\n                    </filter>\n                </defs>\n\n                <!-- Haupt-Container für Sensor und Targets (wird gerendert sobald payload da ist) -->\n                <g v-if=\"msg && msg.payload && msg.payload.sensorid\">\n\n                    <!-- 1. DYNAMISCHE SICHTKEULE (Um 75% ausgedehnt) -->\n                    <path d=\"M 0 0 L -189 -109.38 A 218.75 218.75 0 0 1 189 -109.38 Z\" :style=\"{\n                              fill: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#b4b4b4',\n                              fillOpacity: msg.payload.targets && msg.payload.targets.length > 0 ? 0.25 : 0.12,\n                              stroke: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#888888',\n                              strokeWidth: '1.5px',\n                              strokeDasharray: msg.payload.targets && msg.payload.targets.length > 0 ? 'none' : '2,2',\n                              strokeOpacity: 0.6\n                          }\"\n                        :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ') rotate(' + (msg.payload.winkel || 0) + ')'\" />\n\n                    <!-- 2. SENSOR-ZENTRUM -->\n                    <circle :cx=\"msg.payload.offsetX || 0\" :cy=\"msg.payload.offsetY || 0\" r=\"6\"\n                        style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n\n                    <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n                    <g :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ')'\">\n                        <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\"\n                            filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n                            {{ msg.payload.sensorid }} ({{ msg.payload.winkel }}°)\n                        </text>\n                        <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\"\n                            filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n                            {{ msg.payload.sensorBez }}\n                        </text>\n                    </g>\n\n                    <!-- 4. TARGETS (Ziele): Positionierung über Gruppen-Transformation -->\n                    <g v-for=\"(t, index) in msg.payload.targets\" :key=\"t.id || index\"\n                        :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n                        <!-- Roter Kreis zentriert bei 0,0 der transformierten Gruppe -->\n                        <circle cx=\"0\" cy=\"0\" r=\"7\"\n                            style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n\n                        <!-- ID-Label daneben platziert -->\n                        <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\"\n                            filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n                            ID:{{ t.id }} (s:{{ t.s }})\n                        </text>\n                    </g>\n\n                </g>\n            </svg>\n\n        </div> <!-- Ende des Wrappers -->\n    </div>\n\n    <!-- Globaler Status-Balken -->\n    <div v-if=\"msg && msg.payload && msg.payload.targets\" :style=\"{ \n            width: '100%',\n            maxWidth: '800px', \n            margin: '15px auto 0 auto', \n            padding: '8px 0', \n            borderRadius: '4px', \n            textAlign: 'center', \n            fontWeight: 'bold', \n            fontSize: '13px', \n            color: '#ffffff', \n            backgroundColor: msg.payload.targets.length > 0 ? '#ff3b30' : '#34c759'\n         }\">\n        {{ msg.payload.targets.length > 0 ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n    </div>\n</template>\n\n<script>\n    export default {\n    name: 'MultiSensorMap',\n    props: {\n        msg: {\n            type: Object,\n            default: () => ({})\n        }\n    },\n    data() {\n        return {\n            pathPrefix: '/public/' \n        }\n    },\n    computed: {\n        imageUrl() {\n            const protocol = window.location.protocol;\n            const host = window.location.host;\n            return `${protocol}//${host}${this.pathPrefix}Zeichnung.svg`;\n        }\n    },\n    methods: {\n        handleImageError() {\n            if (this.pathPrefix === '/public/') {\n                this.pathPrefix = '/';\n            }\n        },\n        // Hilfsfunktion zur Koordinaten-Transformation (Falls du sie direkt in der Komponente benötigst)\n        transformCoordinates(relX, relY, alphaGrad) {\n            const alpha = (alphaGrad * Math.PI) / 180;\n            return {\n                x:  relX * Math.cos(alpha) + relY * Math.sin(alpha),\n                y: -relX * Math.sin(alpha) + relY * Math.cos(alpha)\n            };\n        }\n    }\n}\n</script>",
+        "format": "<!-- STRUKTURELLER CONTAINER FÜR DASHBOARD 2.0 -->\n<div style=\"width: 100%; min-width: 400px; max-width: 800px; margin: 5px auto; display: flex; flex-direction: column; background-color: #f5f5f5; border: 1px solid #ccc; box-sizing: border-box;\">\n  \n  <!-- KARTEN-CONTAINER -->\n  <div style=\"width: 100%; height: 600px; position: relative; overflow: hidden; background-color: #f5f5f5;\">\n    \n    <!-- SAUBERES SVG OVERLAY -->\n    <!-- TIPPFEHLER BEI XMLNS KORRIGIERT: Zwingend erforderlich für korrektes SVG-Rendering -->\n    <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\" style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n      <defs>\n        <!-- Text-Hintergrundfilter -->\n        <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n          <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\" />\n          <feComposite in=\"SourceGraphic\" operator=\"over\" />\n        </filter>\n      </defs>\n\n      <!-- HAUPT-WRAPPER (Verschiebung und Skalierung der Gesamtszene) -->\n      <g transform=\"translate(80, 120) scale(0.9)\">\n        \n        <!-- ========================================== -->\n        <!-- START: IHRE EIGENEN STRICHE UND WÄNDE     -->\n        <!-- ========================================== -->\n        <g id=\"mein-hintergrundplan\" style=\"pointer-events: auto;\">\n          \n          <!-- Ein dünner grauer Rahmen um das gesamte Spielfeld (640x480) -->\n          <rect x=\"0\" y=\"0\" width=\"640\" height=\"480\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1\" />\n          \n          <!-- BEISPIEL 1: Eine einfache gerade Wand (Strich) -->\n          <!-- x1/y1 ist der Startpunkt, x2/y2 der Endpunkt -->\n          <line x1=\"50\" y1=\"100\" x2=\"400\" y2=\"100\" stroke=\"#444444\" stroke-width=\"3\" />\n          \n          <!-- BEISPIEL 2: Eine schräge Wand -->\n          <line x1=\"400\" y1=\"100\" x2=\"500\" y2=\"300\" stroke=\"#444444\" stroke-width=\"3\" stroke-dasharray=\"4,4\" />\n          \n          <!-- BEISPIEL 3: Ein geschlossener Raum oder eine Verbotszone -->\n          <!-- fill=\"none\" macht das Innere durchsichtig, fill-opacity färbt es transparent ein -->\n          <rect x=\"100\" y=\"200\" width=\"150\" height=\"120\" fill=\"#007aff\" fill-opacity=\"0.05\" stroke=\"#007aff\" stroke-width=\"1.5\" />\n          \n          <!-- BEISPIEL 4: Ein Text zur Beschriftung eines Raumes -->\n          <text x=\"110\" y=\"225\" fill=\"#666666\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\">Zone 1</text>\n\n        </g>\n        <!-- ========================================== -->\n\n\n        <!-- SCHLEIFE ÜBER DIE RADAR-SENSOREN (Bleiben unverändert scharf) -->\n        <g v-if=\"msg && Array.isArray(msg.payload)\" v-for=\"(sensor, idx) in msg.payload\" :key=\"sensor.sensorid || idx\">\n          \n          <!-- 1. DYNAMISCHE SICHTKEULE -->\n          <path d=\"M 0 0 L -189 -109.38 A 218.75 218.75 0 0 1 189 -109.38 Z\" \n                :style=\"{ \n                  fill: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#b4b4b4', \n                  fillOpacity: sensor.targets && sensor.targets.length > 0 ? 0.25 : 0.12, \n                  stroke: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#888888', \n                  strokeWidth: '1.5px', \n                  strokeDasharray: sensor.targets && sensor.targets.length > 0 ? 'none' : '2,2', \n                  strokeOpacity: 0.6 \n                }\" \n                :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ') rotate(' + (sensor.winkel || 0) + ')'\" />\n\n          <!-- 2. SENSOR-ZENTRUM -->\n          <circle :cx=\"sensor.offsetX || 0\" :cy=\"sensor.offsetY || 0\" r=\"6\" style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n\n          <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n          <g :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ')'\">\n            <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n              {{ sensor.sensorid }} ({{ sensor.winkel }}°)\n            </text>\n            <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\" filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n              {{ sensor.sensorBez }}\n            </text>\n          </g>\n\n          <!-- 4. TARGETS PRO SENSOR -->\n          <g v-for=\"(t, index) in sensor.targets\" :key=\"t.id || index\" :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n            <circle cx=\"0\" cy=\"0\" r=\"7\" style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n            <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n              ID:{{ t.id }} (s:{{ t.s }})\n            </text>\n          </g>\n\n        </g>\n      </g>\n    </svg>\n  </div>\n\n  <!-- STATUS-BALKEN -->\n  <div v-if=\"msg && Array.isArray(msg.payload)\"\n       :style=\"{ \n         width: '100%', padding: '8px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#ffffff', \n         backgroundColor: msg.payload.some(s => s.targets && s.targets.length > 0) ? '#ff3b30' : '#34c759' \n       }\">\n    {{ msg.payload.some(s => s.targets && s.targets.length > 0) ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n  </div>\n</div>\n",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1040,
+        "x": 1140,
         "y": 740,
         "wires": [
             []
@@ -842,8 +824,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 700,
-        "y": 840,
+        "x": 600,
+        "y": 820,
         "wires": []
     },
     {
@@ -920,34 +902,9 @@
         "wires": [
             [
                 "6caee2d653a0c467",
-                "c6af5deaf9f1f04f",
-                "afab3921f42d31c2"
+                "afab3921f42d31c2",
+                "a3317880b5905381"
             ]
-        ]
-    },
-    {
-        "id": "56e805ca128e541a",
-        "type": "ui-template",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "group": "75b15bea3008a8a4",
-        "page": "",
-        "ui": "",
-        "name": "Ansicht Multi Sensor",
-        "order": 4,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<template>\n    <div\n        style=\"width: 100%; min-width: 400px; max-width: 800px; height: 600px; margin: 5px auto; position: relative; border: 1px solid #ccc; overflow: hidden; background-color: #f5f5f5;\">\n\n        <!-- WRAPPER: Verschiebt das Hintergrundbild UND das SVG-Overlay absolut synchron (10% = 80px nach rechts, 20px nach unten) -->\n        <div style=\"position: absolute; top: 80px; left: 80px; width: 100%; height: 100%;\">\n\n            <!-- Hintergrundbild aus dem public-Ordner -->\n            <img :src=\"imageUrl\"\n                 @error=\"handleImageError\"\n                 style=\"width: 80%; height: 80%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;\" />\n\n            <!-- SVG Overlay mit W3C-konformem Namespace und Standard-viewBox -->\n            <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\"\n                style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n                <defs>\n                    <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n                        <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\" />\n                        <feComposite in=\"SourceGraphic\" operator=\"over\" />\n                    </filter>\n                </defs>\n\n                <!-- Haupt-Container für Sensor und Targets (wird gerendert sobald payload da ist) -->\n                <g v-if=\"msg && msg.payload && msg.payload.sensorid\">\n\n                    <!-- 1. DYNAMISCHE SICHTKEULE (Um 75% ausgedehnt) -->\n                    <path d=\"M 0 0 L -189 -109.38 A 218.75 218.75 0 0 1 189 -109.38 Z\" :style=\"{\n                              fill: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#b4b4b4',\n                              fillOpacity: msg.payload.targets && msg.payload.targets.length > 0 ? 0.25 : 0.12,\n                              stroke: msg.payload.targets && msg.payload.targets.length > 0 ? '#ff3b30' : '#888888',\n                              strokeWidth: '1.5px',\n                              strokeDasharray: msg.payload.targets && msg.payload.targets.length > 0 ? 'none' : '2,2',\n                              strokeOpacity: 0.6\n                          }\"\n                        :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ') rotate(' + (msg.payload.winkel || 0) + ')'\" />\n\n                    <!-- 2. SENSOR-ZENTRUM -->\n                    <circle :cx=\"msg.payload.offsetX || 0\" :cy=\"msg.payload.offsetY || 0\" r=\"6\"\n                        style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n\n                    <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n                    <g :transform=\"'translate(' + (msg.payload.offsetX || 0) + ',' + (msg.payload.offsetY || 0) + ')'\">\n                        <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\"\n                            filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n                            {{ msg.payload.sensorid }} ({{ msg.payload.winkel }}°)\n                        </text>\n                        <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\"\n                            filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n                            {{ msg.payload.sensorBez }}\n                        </text>\n                    </g>\n\n                    <!-- 4. TARGETS (Ziele): Positionierung über Gruppen-Transformation -->\n                    <g v-for=\"(t, index) in msg.payload.targets\" :key=\"t.id || index\"\n                        :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n                        <!-- Roter Kreis zentriert bei 0,0 der transformierten Gruppe -->\n                        <circle cx=\"0\" cy=\"0\" r=\"7\"\n                            style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n\n                        <!-- ID-Label daneben platziert -->\n                        <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\"\n                            filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n                            ID:{{ t.id }} (s:{{ t.s }})\n                        </text>\n                    </g>\n\n                </g>\n            </svg>\n\n        </div> <!-- Ende des Wrappers -->\n    </div>\n\n    <!-- Globaler Status-Balken -->\n    <div v-if=\"msg && msg.payload && msg.payload.targets\" :style=\"{ \n            width: '100%',\n            maxWidth: '800px', \n            margin: '15px auto 0 auto', \n            padding: '8px 0', \n            borderRadius: '4px', \n            textAlign: 'center', \n            fontWeight: 'bold', \n            fontSize: '13px', \n            color: '#ffffff', \n            backgroundColor: msg.payload.targets.length > 0 ? '#ff3b30' : '#34c759'\n         }\">\n        {{ msg.payload.targets.length > 0 ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n    </div>\n</template>\n\n<script>\n    export default {\n    name: 'MultiSensorMap',\n    props: {\n        msg: {\n            type: Object,\n            default: () => ({})\n        }\n    },\n    data() {\n        return {\n            pathPrefix: '/public/' \n        }\n    },\n    computed: {\n        imageUrl() {\n            const protocol = window.location.protocol;\n            const host = window.location.host;\n            return `${protocol}//${host}${this.pathPrefix}Zeichnung.svg`;\n        }\n    },\n    methods: {\n        handleImageError() {\n            if (this.pathPrefix === '/public/') {\n                this.pathPrefix = '/';\n            }\n        },\n        // Hilfsfunktion zur Koordinaten-Transformation (Falls du sie direkt in der Komponente benötigst)\n        transformCoordinates(relX, relY, alphaGrad) {\n            const alpha = (alphaGrad * Math.PI) / 180;\n            return {\n                x:  relX * Math.cos(alpha) + relY * Math.sin(alpha),\n                y: -relX * Math.sin(alpha) + relY * Math.cos(alpha)\n            };\n        }\n    }\n}\n</script>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 640,
-        "y": 940,
-        "wires": [
-            []
         ]
     },
     {
@@ -1105,6 +1062,51 @@
         "className": "",
         "x": 1340,
         "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a3317880b5905381",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "function 1",
+        "func": "// Bestehendes Sensor-Objekt aus dem Kontext holen oder neu erstellen\nlet sensors = context.get('radar_sensors') || {};\n\n// Prüfen, ob die MQTT-Nachricht gültige Radardaten enthält\nif (msg.payload && msg.payload.sensorid) {\n    // Speichere oder aktualisiere die Daten dieses spezifischen Sensors\n    sensors[msg.payload.sensorid] = msg.payload;\n\n    // Im Kontext für die nächste Nachricht sichern\n    context.set('radar_sensors', sensors);\n}\n\n// Wir wandeln das Objekt in ein Array (Liste) um, \n// damit Vue im Dashboard einfach per v-for darüber loopen kann.\nmsg.payload = Object.values(sensors);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 740,
+        "wires": [
+            [
+                "c6af5deaf9f1f04f"
+            ]
+        ]
+    },
+    {
+        "id": "04efc6d6a2155f42",
+        "type": "ui-template",
+        "z": "ac4cb02db15fb728",
+        "d": true,
+        "group": "75b15bea3008a8a4",
+        "page": "",
+        "ui": "",
+        "name": "ok, ohne Bilder",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<!-- STRUKTURELLER CONTAINER FÜR DASHBOARD 2.0 -->\n<div style=\"width: 100%; min-width: 400px; max-width: 800px; margin: 5px auto; display: flex; flex-direction: column; background-color: #f5f5f5; border: 1px solid #ccc; box-sizing: border-box;\">\n  \n  <!-- KARTEN-CONTAINER -->\n  <div style=\"width: 100%; height: 600px; position: relative; overflow: hidden; background-color: #f5f5f5;\">\n    \n    <!-- SAUBERES SVG OVERLAY -->\n    <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\" style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n      <defs>\n        <!-- Text-Hintergrundfilter -->\n        <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n          <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\" />\n          <feComposite in=\"SourceGraphic\" operator=\"over\" />\n        </filter>\n      </defs>\n\n      <!-- HAUPT-WRAPPER (Verschiebung und Skalierung der Gesamtszene) -->\n      <g transform=\"translate(80, 120) scale(0.9)\">\n        \n        <!-- ========================================== -->\n        <!-- HIER IHRE ZEICHNUNG ALS INLINE-SVG EINFÜGEN -->\n        <!-- ========================================== -->\n        <!-- Öffnen Sie Ihre 'Zeichnung.svg' mit einem Texteditor (z.B. Notepad++). -->\n        <!-- Kopieren Sie den gesamten Inhalt (alles zwischen <svg> und </svg>). -->\n        <!-- Ersetzen Sie diese Zeile hier mit Ihrem kopierten Code. -->\n        <!-- Wichtig: Verwenden Sie hier drinnen KEINE <svg>-Tags, sondern nur die Elemente (wie <g>, <path>, <rect> etc.). -->\n        <g id=\"mein-hintergrundplan\" style=\"pointer-events: auto;\">\n          <!-- Beispiel-Platzhalter (wird durch Ihren echten Inhalt ersetzt): -->\n          <rect x=\"0\" y=\"0\" width=\"640\" height=\"480\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1\" />\n          <text x=\"20\" y=\"30\" fill=\"#888888\" font-family=\"sans-serif\" font-size=\"14\">Hintergrund-Lageplan (Vektor)</text>\n        </g>\n        <!-- ========================================== -->\n\n\n        <!-- SCHLEIFE ÜBER DIE RADAR-SENSOREN (Bleiben unverändert scharf) -->\n        <g v-if=\"msg && Array.isArray(msg.payload)\" v-for=\"(sensor, idx) in msg.payload\" :key=\"sensor.sensorid || idx\">\n          \n          <!-- 1. DYNAMISCHE SICHTKEULE -->\n          <path d=\"M 0 0 L -189 -109.38 A 218.75 218.75 0 0 1 189 -109.38 Z\" \n                :style=\"{ \n                  fill: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#b4b4b4', \n                  fillOpacity: sensor.targets && sensor.targets.length > 0 ? 0.25 : 0.12, \n                  stroke: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#888888', \n                  strokeWidth: '1.5px', \n                  strokeDasharray: sensor.targets && sensor.targets.length > 0 ? 'none' : '2,2', \n                  strokeOpacity: 0.6 \n                }\" \n                :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ') rotate(' + (sensor.winkel || 0) + ')'\" />\n\n          <!-- 2. SENSOR-ZENTRUM -->\n          <circle :cx=\"sensor.offsetX || 0\" :cy=\"sensor.offsetY || 0\" r=\"6\" style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n\n          <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n          <g :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ')'\">\n            <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n              {{ sensor.sensorid }} ({{ sensor.winkel }}°)\n            </text>\n            <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\" filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n              {{ sensor.sensorBez }}\n            </text>\n          </g>\n\n          <!-- 4. TARGETS PRO SENSOR -->\n          <g v-for=\"(t, index) in sensor.targets\" :key=\"t.id || index\" :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n            <circle cx=\"0\" cy=\"0\" r=\"7\" style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n            <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n              ID:{{ t.id }} (s:{{ t.s }})\n            </text>\n          </g>\n\n        </g>\n      </g>\n    </svg>\n  </div>\n\n  <!-- STATUS-BALKEN -->\n  <div v-if=\"msg && Array.isArray(msg.payload)\"\n       :style=\"{ \n         width: '100%', padding: '8px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#ffffff', \n         backgroundColor: msg.payload.some(s => s.targets && s.targets.length > 0) ? '#ff3b30' : '#34c759' \n       }\">\n    {{ msg.payload.some(s => s.targets && s.targets.length > 0) ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n  </div>\n</div>\n",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 660,
+        "y": 1100,
         "wires": [
             []
         ]
