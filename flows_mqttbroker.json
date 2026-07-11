@@ -706,11 +706,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 130,
-        "y": 740,
+        "x": 110,
+        "y": 640,
         "wires": [
             [
-                "2065c5acdab784c6"
+                "5087d7ceb96eb8a7"
             ]
         ]
     },
@@ -757,7 +757,8 @@
         "y": 820,
         "wires": [
             [
-                "ff46ff8a3cab9510"
+                "ff46ff8a3cab9510",
+                "db9d609e32e47d32"
             ]
         ]
     },
@@ -765,6 +766,7 @@
         "id": "ff46ff8a3cab9510",
         "type": "change",
         "z": "ac4cb02db15fb728",
+        "d": true,
         "name": "Globale Sensor-Konfiguration",
         "rules": [
             {
@@ -780,12 +782,10 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 390,
+        "x": 430,
         "y": 820,
         "wires": [
-            [
-                "f1815dfcfa20fc8e"
-            ]
+            []
         ]
     },
     {
@@ -824,8 +824,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
-        "y": 820,
+        "x": 820,
+        "y": 920,
         "wires": []
     },
     {
@@ -833,7 +833,7 @@
         "type": "debug",
         "z": "ac4cb02db15fb728",
         "name": "debug 3",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": true,
         "tostatus": false,
@@ -858,7 +858,7 @@
         "finalize": "",
         "libs": [],
         "x": 340,
-        "y": 740,
+        "y": 760,
         "wires": [
             [
                 "5ca5501de76f4c18"
@@ -901,9 +901,9 @@
         "y": 740,
         "wires": [
             [
-                "6caee2d653a0c467",
                 "afab3921f42d31c2",
-                "a3317880b5905381"
+                "a3317880b5905381",
+                "6caee2d653a0c467"
             ]
         ]
     },
@@ -1109,6 +1109,94 @@
         "y": 1100,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "2ceb3fbc408c76b1",
+        "type": "debug",
+        "z": "ac4cb02db15fb728",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "db9d609e32e47d32",
+        "type": "http request",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://mediabegleitung.ch/iotph1/getmqttdata.php?api_key=tP3434AATdasd444&application=nodered1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 410,
+        "y": 900,
+        "wires": [
+            [
+                "aac8a163eefad152"
+            ]
+        ]
+    },
+    {
+        "id": "aac8a163eefad152",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "function 2",
+        "func": "// Prüfen, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n\n    // Das neue Zielobjekt initialisieren\n    let neueStruktur = {};\n\n    // Jedes Element aus dem Input-Array durchlaufen\n    msg.payload.forEach(item => {\n\n        // Den Sensor-Schlüssel dynamisch bestimmen (z.B. \"RD06D_05\" -> \"rd06d_05\")\n        // Falls der Schlüssel exakt so bleiben soll wie im Input, das .toLowerCase() einfach löschen\n        let sensorKey = item.sensorid ? item.sensorid.toLowerCase() : \"unbekannt\";\n\n        // Die exakte neue Feldstruktur mit korrekter Gross-/Kleinschreibung aufbauen\n        neueStruktur[sensorKey] = {\n            \"offsetX\": item.offsetx,\n            \"offsetY\": item.offsety,\n            \"winkel\": item.winkel,\n            \"sensorBez\": item.sensorbez\n        };\n    });\n    // 1. Die Struktur in der globalen Variable \"sensorConfig\" speichern\n    global.set(\"sensorConfig\", neueStruktur);\n    // Die transformierte Struktur an die Payload übergeben\n    msg.payload = neueStruktur;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 900,
+        "wires": [
+            [
+                "f1815dfcfa20fc8e"
+            ]
+        ]
+    },
+    {
+        "id": "5087d7ceb96eb8a7",
+        "type": "switch",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "property": "sensorConfig",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 150,
+        "y": 760,
+        "wires": [
+            [],
+            [
+                "2065c5acdab784c6"
+            ]
         ]
     }
 ]
