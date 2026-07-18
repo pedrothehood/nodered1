@@ -34,7 +34,7 @@
             "aac8a163eefad152"
         ],
         "x": 34,
-        "y": 1039,
+        "y": 1279,
         "w": 832,
         "h": 182
     },
@@ -104,7 +104,7 @@
         "id": "88491c5fc6527e94",
         "type": "group",
         "z": "ac4cb02db15fb728",
-        "name": "Telegram-Daten aufbereiten/senden",
+        "name": "Telegram-Daten aufbereiten, mit pseudo-browser-aufruf screenshot machen und mit Bildtext nach Telegram senden",
         "style": {
             "label": true
         },
@@ -113,12 +113,17 @@
             "0c614c43b295d026",
             "7ea5493259a340c4",
             "cfdc799961ace830",
-            "622779f34407fc66"
+            "39e2b3529cac31bd",
+            "08eda00e03cf1ae5",
+            "07d40bba75a951c3",
+            "5205e723a4e10181",
+            "c5c9385351f97438",
+            "7f2642d2c57fdf78"
         ],
-        "x": 574,
-        "y": 679,
-        "w": 692,
-        "h": 142
+        "x": 24,
+        "y": 1019,
+        "w": 1262,
+        "h": 202
     },
     {
         "id": "dc06f9f26c4c93cd",
@@ -492,7 +497,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 170,
-        "y": 1100,
+        "y": 1340,
         "wires": [
             [
                 "ff46ff8a3cab9510",
@@ -522,7 +527,7 @@
         "to": "",
         "reg": false,
         "x": 470,
-        "y": 1080,
+        "y": 1320,
         "wires": [
             []
         ]
@@ -568,7 +573,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 760,
-        "y": 1180,
+        "y": 1420,
         "wires": []
     },
     {
@@ -855,7 +860,7 @@
         "senderr": false,
         "headers": [],
         "x": 430,
-        "y": 1180,
+        "y": 1420,
         "wires": [
             [
                 "aac8a163eefad152"
@@ -876,7 +881,7 @@
         "finalize": "",
         "libs": [],
         "x": 600,
-        "y": 1180,
+        "y": 1420,
         "wires": [
             [
                 "f1815dfcfa20fc8e"
@@ -1015,8 +1020,8 @@
         "links": [
             "e78752cf81108647"
         ],
-        "x": 615,
-        "y": 720,
+        "x": 65,
+        "y": 1060,
         "wires": [
             [
                 "0c614c43b295d026"
@@ -1029,15 +1034,15 @@
         "z": "ac4cb02db15fb728",
         "g": "88491c5fc6527e94",
         "name": "function 3",
-        "func": "// 2. Eingangsdaten prüfen\nconst data = msg.payload;\n\n// Bedingung 1: Nur senden, wenn occupancy gleich 1 ist\n// (Prüfung fängt sowohl die Zahl 1 als auch den String \"1\" ab)\nif (Number(data.occupancy) !== 1) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: occupancy nicht 1\" });\n    return null;\n}\n\n// 3. Kleinstes 'd' (Distance) aus dem targets-Array ermitteln\nlet minD = Infinity;\nif (data.targets && data.targets.length > 0) {\n    for (const target of data.targets) {\n        if (target.d < minD) {\n            minD = target.d;\n        }\n    }\n}\n\n// Bedingung 2: Nur senden, wenn ein gültiges d > 0 gefunden wurde\nif (minD === Infinity || minD <= 0) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: kein target mit d > 0\" });\n    return null;\n}\n\n// --- ÄNDERUNG HIER: Formatierung für den Telegram-Knoten ---\n// Wir verpacken den Text in das von Telegram erwartete Objekt\nmsg.payload = {\n    chatId: 8802727747,  // RECHTSCHREIB-WARNUNG: Das \"I\" bei chatId MUSS groß geschrieben sein!\n    type: \"message\",\n    content: `Sensor ${data.sensorid} ${data.sensorBez} meldet Bewegung mit ${minD}cm Distanz`\n};\n\n// Status-Anzeige unter der Node in Node-RED aktualisieren\nnode.status({ fill: \"green\", shape: \"dot\", text: `Gesendet:${data.sensorid} d=${minD}` });\n\nreturn msg;\n",
+        "func": "// 2. Eingangsdaten prüfen\nconst data = msg.payload;\n\n// Bedingung 1: Nur senden, wenn occupancy gleich 1 ist\n// (Prüfung fängt sowohl die Zahl 1 als auch den String \"1\" ab)\nif (Number(data.occupancy) !== 1) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: occupancy nicht 1\" });\n    return null;\n}\n\n// 3. Kleinstes 'd' (Distance) aus dem targets-Array ermitteln\nlet minD = Infinity;\nif (data.targets && data.targets.length > 0) {\n    for (const target of data.targets) {\n        if (target.d < minD) {\n            minD = target.d;\n        }\n    }\n}\n\n// Bedingung 2: Nur senden, wenn ein gültiges d > 0 gefunden wurde\nif (minD === Infinity || minD <= 0) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: kein target mit d > 0\" });\n    return null;\n}\n\n// --- ÄNDERUNG HIER: Formatierung für den Telegram-Knoten ---\n// Wir verpacken den Text in das von Telegram erwartete Objekt\nmsg.payload = {\n    chatId: 8802727747,  // RECHTSCHREIB-WARNUNG: Das \"I\" bei chatId MUSS groß geschrieben sein!\n    type: \"message\",\n    content: `Sensor ${data.sensorid} ${data.sensorBez} meldet Bewegung mit ${minD}cm Distanz`\n};\nmsg.meinAlarmText = `Sensor ${data.sensorid} ${data.sensorBez} meldet Bewegung mit ${minD}cm Distanz`;\n// Status-Anzeige unter der Node in Node-RED aktualisieren\nnode.status({ fill: \"green\", shape: \"dot\", text: `Gesendet:${data.sensorid} d=${minD}` });\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 720,
-        "y": 720,
+        "x": 170,
+        "y": 1060,
         "wires": [
             [
                 "7ea5493259a340c4"
@@ -1062,12 +1067,11 @@
         "drop": true,
         "allowrate": false,
         "outputs": 1,
-        "x": 910,
-        "y": 720,
+        "x": 360,
+        "y": 1060,
         "wires": [
             [
-                "cfdc799961ace830",
-                "622779f34407fc66"
+                "7f2642d2c57fdf78"
             ]
         ]
     },
@@ -1078,29 +1082,127 @@
         "g": "88491c5fc6527e94",
         "name": "",
         "bot": "78361a3ed26ce4c5",
-        "haserroroutput": false,
-        "outputs": 1,
-        "x": 1150,
-        "y": 720,
+        "haserroroutput": true,
+        "outputs": 2,
+        "x": 1170,
+        "y": 1180,
         "wires": [
+            [],
             []
         ]
     },
     {
-        "id": "622779f34407fc66",
-        "type": "debug",
+        "id": "39e2b3529cac31bd",
+        "type": "function",
         "z": "ac4cb02db15fb728",
         "g": "88491c5fc6527e94",
-        "name": "debug 1",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1120,
-        "y": 780,
-        "wires": []
+        "name": "Bildtext setzen",
+        "func": "msg.payload = {\n    chatId: 8802727747, // Ihre Chat-ID\n    type: \"photo\",\n    content: msg.payload, // Das Bild aus dem Puppeteer-Knoten\n    caption: msg.meinAlarmText || \"📊 Aktuelles Grafana-Dashboard!\" // Holt den Text aus der vorherigen Function ab\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 1180,
+        "wires": [
+            [
+                "cfdc799961ace830"
+            ]
+        ]
+    },
+    {
+        "id": "08eda00e03cf1ae5",
+        "type": "puppeteer-browser-launch",
+        "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
+        "timeout": 30000,
+        "slowMo": 0,
+        "headless": true,
+        "debugport": 0,
+        "devtools": false,
+        "name": "",
+        "x": 360,
+        "y": 1180,
+        "wires": [
+            [
+                "07d40bba75a951c3"
+            ]
+        ]
+    },
+    {
+        "id": "07d40bba75a951c3",
+        "type": "puppeteer-page-goto",
+        "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
+        "name": "Grafana Dasboard link",
+        "url": "http://mqttbroker.local:3000/d-solo/adq47qw/radar-data1?orgId=1&panelId=1&from=now-30m&to=now&timezone=browser&kiosk=true",
+        "urltype": "str",
+        "waitUntil": "networkidle2",
+        "x": 540,
+        "y": 1180,
+        "wires": [
+            [
+                "5205e723a4e10181"
+            ]
+        ]
+    },
+    {
+        "id": "5205e723a4e10181",
+        "type": "puppeteer-page-screenshot",
+        "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
+        "name": "Page",
+        "fullpage": true,
+        "x": 710,
+        "y": 1180,
+        "wires": [
+            [
+                "c5c9385351f97438"
+            ]
+        ]
+    },
+    {
+        "id": "c5c9385351f97438",
+        "type": "puppeteer-browser-close",
+        "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
+        "name": "Close",
+        "x": 830,
+        "y": 1180,
+        "wires": [
+            [
+                "39e2b3529cac31bd"
+            ]
+        ]
+    },
+    {
+        "id": "7f2642d2c57fdf78",
+        "type": "change",
+        "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
+        "name": "Browser-attribute setzen",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{   \"args\": [     \"--headless=new\",     \"--no-sandbox\",     \"--disable-setuid-sandbox\",     \"--disable-gpu\"   ] }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 170,
+        "y": 1180,
+        "wires": [
+            [
+                "08eda00e03cf1ae5"
+            ]
+        ]
     }
 ]
