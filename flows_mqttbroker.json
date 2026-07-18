@@ -101,6 +101,26 @@
         "h": 162
     },
     {
+        "id": "88491c5fc6527e94",
+        "type": "group",
+        "z": "ac4cb02db15fb728",
+        "name": "Telegram-Daten aufbereiten/senden",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "119027a0049a8d9a",
+            "0c614c43b295d026",
+            "7ea5493259a340c4",
+            "cfdc799961ace830",
+            "622779f34407fc66"
+        ],
+        "x": 574,
+        "y": 679,
+        "w": 692,
+        "h": 142
+    },
+    {
         "id": "dc06f9f26c4c93cd",
         "type": "mqtt-broker",
         "name": "",
@@ -227,21 +247,6 @@
         "modules": {
             "@flowfuse/node-red-dashboard": "1.30.2"
         }
-    },
-    {
-        "id": "90257f8209a4337c",
-        "type": "influxdb",
-        "hostname": "127.0.0.1",
-        "port": 8086,
-        "protocol": "http",
-        "database": "database",
-        "name": "Influx-DB",
-        "usetls": false,
-        "tls": "",
-        "influxdbVersion": "2.0",
-        "url": "http://localhost:8086",
-        "timeout": 10,
-        "rejectUnauthorized": true
     },
     {
         "id": "78361a3ed26ce4c5",
@@ -1005,6 +1010,7 @@
         "id": "119027a0049a8d9a",
         "type": "link in",
         "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
         "name": "link in 3",
         "links": [
             "e78752cf81108647"
@@ -1021,6 +1027,7 @@
         "id": "0c614c43b295d026",
         "type": "function",
         "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
         "name": "function 3",
         "func": "// 2. Eingangsdaten prüfen\nconst data = msg.payload;\n\n// Bedingung 1: Nur senden, wenn occupancy gleich 1 ist\n// (Prüfung fängt sowohl die Zahl 1 als auch den String \"1\" ab)\nif (Number(data.occupancy) !== 1) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: occupancy nicht 1\" });\n    return null;\n}\n\n// 3. Kleinstes 'd' (Distance) aus dem targets-Array ermitteln\nlet minD = Infinity;\nif (data.targets && data.targets.length > 0) {\n    for (const target of data.targets) {\n        if (target.d < minD) {\n            minD = target.d;\n        }\n    }\n}\n\n// Bedingung 2: Nur senden, wenn ein gültiges d > 0 gefunden wurde\nif (minD === Infinity || minD <= 0) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: kein target mit d > 0\" });\n    return null;\n}\n\n// --- ÄNDERUNG HIER: Formatierung für den Telegram-Knoten ---\n// Wir verpacken den Text in das von Telegram erwartete Objekt\nmsg.payload = {\n    chatId: 8802727747,  // RECHTSCHREIB-WARNUNG: Das \"I\" bei chatId MUSS groß geschrieben sein!\n    type: \"message\",\n    content: `Sensor ${data.sensorid} ${data.sensorBez} meldet Bewegung mit ${minD}cm Distanz`\n};\n\n// Status-Anzeige unter der Node in Node-RED aktualisieren\nnode.status({ fill: \"green\", shape: \"dot\", text: `Gesendet:${data.sensorid} d=${minD}` });\n\nreturn msg;\n",
         "outputs": 1,
@@ -1041,6 +1048,7 @@
         "id": "7ea5493259a340c4",
         "type": "delay",
         "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
         "name": "Delay Telegram-Message",
         "pauseType": "rate",
         "timeout": "30",
@@ -1067,6 +1075,7 @@
         "id": "cfdc799961ace830",
         "type": "telegram sender",
         "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
         "name": "",
         "bot": "78361a3ed26ce4c5",
         "haserroroutput": false,
@@ -1081,8 +1090,9 @@
         "id": "622779f34407fc66",
         "type": "debug",
         "z": "ac4cb02db15fb728",
+        "g": "88491c5fc6527e94",
         "name": "debug 1",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1090,7 +1100,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1120,
-        "y": 800,
+        "y": 780,
         "wires": []
     }
 ]
