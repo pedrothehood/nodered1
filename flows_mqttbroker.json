@@ -2,10 +2,103 @@
     {
         "id": "ac4cb02db15fb728",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "Main",
         "disabled": false,
         "info": "",
         "env": []
+    },
+    {
+        "id": "24c6d0bf3fef03a6",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "185ad95e316c8f74",
+        "type": "group",
+        "z": "ac4cb02db15fb728",
+        "name": "Lesen DB-Daten-mqttdata mit Offsetx/y, setzen von global.set(\"sensorConfig\") mit diesen Daten",
+        "style": {
+            "label": true,
+            "color": "#bfdbef",
+            "fill": "#bfdbef",
+            "fill-opacity": "0.3"
+        },
+        "nodes": [
+            "471726f70f7b1950",
+            "ff46ff8a3cab9510",
+            "f1815dfcfa20fc8e",
+            "db9d609e32e47d32",
+            "aac8a163eefad152"
+        ],
+        "x": 34,
+        "y": 1039,
+        "w": 832,
+        "h": 182
+    },
+    {
+        "id": "95ee46e3b6f68ca2",
+        "type": "group",
+        "z": "ac4cb02db15fb728",
+        "name": "Einlesen MQTT-Daten, Switch(Warten auf \"sensorConfig\"-Daten), ergänzen mit Sensorid",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "583062c81ff4dcde",
+            "2065c5acdab784c6",
+            "5ca5501de76f4c18",
+            "5087d7ceb96eb8a7",
+            "e78752cf81108647"
+        ],
+        "x": 14,
+        "y": 559,
+        "w": 1022,
+        "h": 102
+    },
+    {
+        "id": "2b7a740ef0bf598d",
+        "type": "group",
+        "z": "ac4cb02db15fb728",
+        "name": "Influx-Daten vorbereiten und Senden (ab Payload)",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "6caee2d653a0c467",
+            "9e948578b3fadfd2",
+            "914fdd403ecf6f5c",
+            "22e0188111a56c25"
+        ],
+        "x": 24,
+        "y": 679,
+        "w": 522,
+        "h": 122
+    },
+    {
+        "id": "386ca7890191d744",
+        "type": "group",
+        "z": "ac4cb02db15fb728",
+        "name": "Visualisierung Dashboard Radardaten mit Sound",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "c6af5deaf9f1f04f",
+            "84b5a61436c0abe5",
+            "afab3921f42d31c2",
+            "74f257607f4db059",
+            "06d45f0b91f5656f",
+            "6422489bdef6845a",
+            "a3317880b5905381",
+            "03e37622fa503e95"
+        ],
+        "x": 24,
+        "y": 839,
+        "w": 1022,
+        "h": 162
     },
     {
         "id": "dc06f9f26c4c93cd",
@@ -151,44 +244,31 @@
         "rejectUnauthorized": true
     },
     {
-        "id": "d569f7754aa41cd6",
-        "type": "mqtt in",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "name": "mqtt-radar",
-        "topic": "esp32/radar/attributes/rd06d-04",
-        "qos": "0",
-        "datatype": "auto-detect",
-        "broker": "dc06f9f26c4c93cd",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 177,
-        "y": 396,
-        "wires": [
-            [
-                "5413752d31c20cbe"
-            ]
-        ]
-    },
-    {
-        "id": "3bedeb6fe1cfcd79",
-        "type": "function",
-        "z": "ac4cb02db15fb728",
-        "name": "Prozentumrechnung",
-        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\n// Neuer Skalierungsfaktor für das SVG (Breite max 100, Höhe max 125)\n// 125 Pixel entsprechen 6000 mm (6 Metern) -> Faktor: 0.020833\nconst scale = 125 / 6000;\n\n// Berechnung für maximal 3 Targets (IDs 0, 1, 2)\nfor (let i = 0; i < 3; i++) {\n    let target = targets.find(t => t.id === i);\n    if (target) {\n\n        // X-Berechnung: Startet in der Mitte (50) und skaliert den Millimeter-Wert\n        let xPixel = 50 + (target.x * scale);\n\n        // Y-Berechnung: Startet unten beim Sensor (125) und wandert nach oben (Minus)\n        let yPixel = 125 - (target.y * scale);\n\n        processedTargets.push({\n            id: target.id,\n            x: Math.round(xPixel * 100) / 100, // Auf 2 Dezimalstellen runden\n            y: Math.round(yPixel * 100) / 100,\n            s: target.s,\n            visible: true\n        });\n    } else {\n        // Falls Target nicht aktiv, als unsichtbar markieren\n        processedTargets.push({ id: i, visible: false });\n    }\n}\n\n// Daten für das neue Dashboard-Template verpacken\nmsg.payload = {\n    targets: processedTargets,\n    // Den Status aus dem Speicher holen (Standardwert ist \"OFF\")\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\"\n};\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 400,
-        "y": 400,
-        "wires": [
-            []
-        ]
+        "id": "78361a3ed26ce4c5",
+        "type": "telegram bot",
+        "botname": "Pedrosbot",
+        "usernames": "",
+        "chatids": "8802727747",
+        "baseapiurl": "https://api.telegram.org",
+        "testenvironment": false,
+        "updatemode": "polling",
+        "pollinterval": 300,
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": 6667,
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbothost": "0.0.0.0",
+        "localbotport": 8443,
+        "publicbotport": 8443,
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
     },
     {
         "id": "4fc37bba2a3c3d37",
@@ -203,7 +283,7 @@
         "finalize": "",
         "libs": [],
         "x": 380,
-        "y": 500,
+        "y": 440,
         "wires": [
             [
                 "602ff015744490fe"
@@ -225,7 +305,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 120,
-        "y": 500,
+        "y": 440,
         "wires": [
             [
                 "4fc37bba2a3c3d37"
@@ -257,7 +337,7 @@
         "repair": false,
         "outputs": 2,
         "x": 570,
-        "y": 500,
+        "y": 440,
         "wires": [
             [],
             []
@@ -318,7 +398,7 @@
         "to": "",
         "reg": false,
         "x": 700,
-        "y": 500,
+        "y": 440,
         "wires": [
             []
         ]
@@ -357,353 +437,7 @@
         "to": "",
         "reg": false,
         "x": 700,
-        "y": 540,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "8d46b411eec30899",
-        "type": "ui-template",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "group": "75b15bea3008a8a4",
-        "page": "",
-        "ui": "",
-        "name": "Ansicht 1 Sensor",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<div style=\"width: 100%; min-width: 280px; max-width: 450px; height: 420px; margin: 5px auto; padding: 10px; position: relative; display: flex; flex-direction: column; justify-content: space-between;\">\n  \n  <!-- Das Koordinatensystem/Radar (Skala erweitert auf 6m) -->\n  <svg viewBox=\"0 0 100 125\" style=\"width: 100%; height: 350px; display: block; overflow: visible;\">\n    <defs>\n      <filter x=\"0\" y=\"0\" width=\"1\" height=\"1\" id=\"bg-text\">\n        <feFlood flood-color=\"var(--sys-bg-default, #111)\" flood-opacity=\"0.7\"/>\n        <feComposite in=\"SourceGraphic\" operator=\"over\"/>\n      </filter>\n    </defs>\n\n    <!-- Feste Hintergrundringe -->\n    <circle cx=\"50\" cy=\"125\" r=\"41.67\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"81.33\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">2m</text>\n\n    <circle cx=\"50\" cy=\"125\" r=\"83.33\" fill=\"none\" stroke=\"var(--sys-border-subtle, #444)\" stroke-width=\"0.5\" stroke-dasharray=\"1,1\" />\n    <text x=\"50\" y=\"39.67\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">4m</text>\n    \n    <circle cx=\"50\" cy=\"125\" r=\"125\" fill=\"none\" stroke=\"var(--sys-border-default, #666)\" stroke-width=\"0.8\" />\n    <text x=\"50\" y=\"-2\" fill=\"#000000\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" text-anchor=\"middle\">6m</text>\n    \n    <line x1=\"50\" y1=\"0\" x2=\"50\" y2=\"125\" stroke=\"var(--sys-border-subtle, #333)\" stroke-width=\"0.5\" />\n    <circle cx=\"50\" cy=\"125\" r=\"2.5\" fill=\"#ff9900\" />\n   \n<text x=\"54\" y=\"124\" fill=\"#ff9900\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\">{{ msg.payload.sensorid\n  }}</text>\n    <!-- Hier werden die Targets gezeichnet -->\n    <g v-for=\"t in msg.payload.targets\" :key=\"t.id\">\n      <g v-if=\"t.visible\">\n        <circle :cx=\"t.x\" :cy=\"t.y\" r=\"3\" fill=\"#00ff00\" stroke=\"#ffffff\" stroke-width=\"0.5\" />\n        <text :x=\"t.x + 4\" :y=\"t.y + 1\" fill=\"#00ff00\" font-size=\"4\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\">\n          ID:{{t.id}} ({{t.s}})\n        </text>\n      </g>\n    </g>\n  </svg>\n\n  <!-- Auffälliges Signal-Banner -->\n  <!-- Auffälliges Signal-Banner (verkleinert und weniger breit) -->\n  <div\n    :style=\"{ width: '80%', margin: '0 auto', padding: '6px 0', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#ffffff', letterSpacing: '0.5px', transition: 'all 0.3s ease', backgroundColor: msg.payload.alertStatus === 'ON' ? '#ff3b30' : '#34c759', boxShadow: msg.payload.alertStatus === 'ON' ? '0 0 8px #ff3b30' : 'none' }\">\n    {{ msg.payload.alertStatus === 'ON' ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n  </div>\n\n</div>\n",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 770,
-        "y": 400,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "5413752d31c20cbe",
-        "type": "function",
-        "z": "ac4cb02db15fb728",
-        "name": "Umrechnung 1 Sensor",
-        "func": "const targets = msg.payload.targets || [];\nlet processedTargets = [];\n\nconst svgWidth = 100; // ca. 33% mehr Dehnung,  statt 100;\nconst svgHeight = 125;\nconst scale = svgHeight / 6000;\n\nconst targetMap = {};\nfor (let t of targets) {\n    targetMap[t.id] = t;\n}\n\n// Hilfsvariable für den geringsten Y-Abstand in mm (Start bei unendlich)\nlet minMillimeterY = Infinity; \n\nfor (let i = 0; i < 3; i++) {\n    let target = targetMap[i];\n    \n    if (target) {\n        let xPixel = 50 + (target.x * scale * 1.6); // x-Dehnfaktor\n        let yPixel = svgHeight - (target.y * scale);\n        \n        let xPercent = (xPixel / svgWidth) * 100;\n        let yPercent = (yPixel / svgHeight) * 100;\n        \n        // Finde das Target mit dem geringsten Abstand (target.y ist der echte mm-Wert)\n        if (target.y < minMillimeterY) {\n            minMillimeterY = target.y;\n        }\n\n        processedTargets.push({\n            id: i,\n            x: Number(xPixel.toFixed(2)),\n            y: Number(yPixel.toFixed(2)),\n            px: Number(xPercent.toFixed(2)),\n            py: Number(yPercent.toFixed(2)),\n            s: target.s ?? 0,\n            visible: true\n        });\n    } else {\n        processedTargets.push({\n            id: i,\n            visible: false\n        });\n    }\n}\n\n// Zonen-Logik basierend auf den echten Millimeter-Werten\nlet distZone = \"NONE\";\nlet minDist = 0;\n// last segment nach \"/\"\nconst parts = (msg.topic || \"\").split('/');\nmsg.sensorid = parts[parts.length - 1];\nif (minMillimeterY !== Infinity) {\n    minDist = minMillimeterY; // Gibt den minimalen Abstand in mm aus\n    \n    if (minDist <= 2000) {\n        distZone = \"NEAR\";       // 0m bis 2m\n    } else if (minDist <= 4000) {\n        distZone = \"MEDIUM\";     // >2m bis 4m\n    } else {\n        distZone = \"FAR\";        // >4m bis 6m\n    }\n}\n\nmsg.payload = {\n    targets: processedTargets,\n    alertStatus: global.get(\"radar_target_alert\") || \"OFF\",\n    minDist: minDist, // minimaler Abstand in mm\n    distZone: distZone, // \"NEAR\", \"MEDIUM\", \"FAR\" oder \"NONE\"\n    sensorid: msg.sensorid\n};\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 437,
-        "y": 276,
-        "wires": [
-            [
-                "8d46b411eec30899",
-                "73b9e7f2f78f62c1"
-            ]
-        ]
-    },
-    {
-        "id": "73b9e7f2f78f62c1",
-        "type": "switch",
-        "z": "ac4cb02db15fb728",
-        "name": "",
-        "property": "payload.distZone",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "NEAR",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "MEDIUM",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "FAR",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "NONE",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 4,
-        "x": 650,
-        "y": 260,
-        "wires": [
-            [
-                "d6c0fdfe1efe8e38"
-            ],
-            [
-                "459bd921c7ba2f52"
-            ],
-            [
-                "e5b45e79aa8ddc3c"
-            ],
-            [
-                "d638dd154e3e1f66"
-            ]
-        ]
-    },
-    {
-        "id": "e5b45e79aa8ddc3c",
-        "type": "change",
-        "z": "ac4cb02db15fb728",
-        "name": "START-FAR",
-        "rules": [
-            {
-                "t": "set",
-                "p": "ui_update.source",
-                "pt": "msg",
-                "to": "/Trackera.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "/Trackera.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "paylod",
-                "pt": "msg",
-                "to": "play",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.muted",
-                "pt": "msg",
-                "to": "off",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.autoplay",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.loop",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 830,
-        "y": 300,
-        "wires": [
-            [
-                "8d8805f57af57797"
-            ]
-        ]
-    },
-    {
-        "id": "459bd921c7ba2f52",
-        "type": "change",
-        "z": "ac4cb02db15fb728",
-        "name": "START-MEDIUM",
-        "rules": [
-            {
-                "t": "set",
-                "p": "ui_update.source",
-                "pt": "msg",
-                "to": "/Trackerb.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "/Trackerb.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "paylod",
-                "pt": "msg",
-                "to": "play",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.muted",
-                "pt": "msg",
-                "to": "off",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.autoplay",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.loop",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 850,
-        "y": 260,
-        "wires": [
-            [
-                "8d8805f57af57797"
-            ]
-        ]
-    },
-    {
-        "id": "d6c0fdfe1efe8e38",
-        "type": "change",
-        "z": "ac4cb02db15fb728",
-        "name": "START-NEAR",
-        "rules": [
-            {
-                "t": "set",
-                "p": "ui_update.source",
-                "pt": "msg",
-                "to": "/Trackerc.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "/Trackerc.mp3",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "paylod",
-                "pt": "msg",
-                "to": "play",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.muted",
-                "pt": "msg",
-                "to": "off",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.autoplay",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.loop",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 840,
-        "y": 220,
-        "wires": [
-            [
-                "8d8805f57af57797"
-            ]
-        ]
-    },
-    {
-        "id": "d638dd154e3e1f66",
-        "type": "change",
-        "z": "ac4cb02db15fb728",
-        "name": "STOPP",
-        "rules": [
-            {
-                "t": "set",
-                "p": "ui_update.autoplay",
-                "pt": "msg",
-                "to": "off",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "ui_update.muted",
-                "pt": "msg",
-                "to": "on",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "stop",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 820,
-        "y": 340,
-        "wires": [
-            [
-                "8d8805f57af57797"
-            ]
-        ]
-    },
-    {
-        "id": "8d8805f57af57797",
-        "type": "ui-audio",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "group": "75b15bea3008a8a4",
-        "ui": "",
-        "name": "",
-        "order": 1,
-        "width": "2",
-        "height": "1",
-        "mode": "src",
-        "voice": "",
-        "src": "",
-        "autoplay": "on",
-        "loop": "on",
-        "muted": "off",
-        "className": "",
-        "x": 1040,
-        "y": 280,
+        "y": 480,
         "wires": [
             []
         ]
@@ -712,6 +446,7 @@
         "id": "583062c81ff4dcde",
         "type": "mqtt in",
         "z": "ac4cb02db15fb728",
+        "g": "95ee46e3b6f68ca2",
         "name": "MQTT-Multi-Radar",
         "topic": "esp32/radar/attributes/#",
         "qos": "0",
@@ -721,37 +456,19 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 110,
-        "y": 640,
+        "x": 130,
+        "y": 600,
         "wires": [
             [
-                "5087d7ceb96eb8a7",
-                "2ceb3fbc408c76b1"
+                "5087d7ceb96eb8a7"
             ]
-        ]
-    },
-    {
-        "id": "2717b4e108d63878",
-        "type": "function",
-        "z": "ac4cb02db15fb728",
-        "name": "Umrechnung Multi Sensor",
-        "func": "// Ausschaltverzögerung in Millisekunden (5 Sekunden)\nconst OFF_DELAY = 5000;\n\n// 1. Speicher aus dem Kontext holen\nlet sensorRegister = context.get('sensorRegister') || {};\nlet currentStatus = context.get('currentStatus') || 'OFF';\nlet offTimer = context.get('offTimer') || null;\n\n// 2. Eingehende Daten direkt aus msg.payload lesen\nlet incoming = msg.payload;\nif (typeof incoming === \"string\") {\n    try { incoming = JSON.parse(incoming); } catch(e) { incoming = {}; }\n}\n\n// 3. Sensor-ID und Konfigurationsdaten direkt aus der Payload extrahieren\nlet id = incoming.sensorid;\n\nif (id) {\n    // Falls Daten fehlen, Fallbacks nutzen\n    const config = {\n        sensorBez: incoming.sensorBez || \"Unbekannter Sensor\",\n        offsetX: typeof incoming.offsetX === \"number\" ? incoming.offsetX : 0,\n        offsetY: typeof incoming.offsetY === \"number\" ? incoming.offsetY : 0,\n        winkel: typeof incoming.winkel === \"number\" ? incoming.winkel : 0\n    };\n\n    // Original-Targets holen (Struktur: incoming.targets)\n    let rawTargets = incoming.targets || [];\n    let transformedTargets = [];\n\n    // MATHEMATISCHE BERECHNUNG DER TARGET-POSITIONEN\n    rawTargets.forEach(t => {\n        // Winkel in Bogenmass umrechnen\n        let alpha = config.winkel * Math.PI / 180;\n        \n        // Bezugspunkt-Korrektur (Übernommen aus Originalcode)\n        let relX = t.x - 50;\n        let relY = 125 - t.y; \n        \n        // Rotationsmatrix anwenden\n        let rotX = relX * Math.cos(alpha) + relY * Math.sin(alpha);\n        let rotY = relX * Math.sin(alpha) - relY * Math.cos(alpha);\n        \n        // Globale Position auf dem Hausplan berechnen\n        let finalX = config.offsetX + rotX;\n        let finalY = config.offsetY - rotY;\n\n        // Objekt befüllen (Feld \"visible\" entfernt, da im Input nicht vorhanden)\n        transformedTargets.push({\n            id: t.id,\n            x: Math.round(finalX),\n            y: Math.round(finalY),\n            s: t.s // Grösse/Status mitsichern\n        });\n    });\n\n    // Sensor im Register aktualisieren\n    sensorRegister[id] = {\n        sensorid: id,\n        sensorBez: config.sensorBez,\n        offsetX: config.offsetX,\n        offsetY: config.offsetY,\n        winkel: config.winkel,\n        targets: transformedTargets\n    };\n}\n\ncontext.set('sensorRegister', sensorRegister);\n\n// 4. Prüfen, ob aktuell IRGENDEIN Sensor ein echtes Target sieht\nconst sensorArray = Object.values(sensorRegister);\nconst rawTargetDetected = sensorArray.some(sensor => \n    sensor.targets && sensor.targets.length > 0\n);\n\n// 5. Verzögerungs-Logik (Debounce)\nif (rawTargetDetected) {\n    if (offTimer) {\n        clearTimeout(offTimer);\n        context.set('offTimer', null);\n    }\n    currentStatus = 'ON';\n    context.set('currentStatus', currentStatus);\n    \n    msg.payload = { sensors: sensorArray, globalAlertStatus: currentStatus };\n    node.send(msg);\n} else {\n    if (currentStatus === 'ON') {\n        if (!offTimer) {\n            offTimer = setTimeout(() => {\n                let freshRegister = context.get('sensorRegister') || {};\n                context.set('currentStatus', 'OFF');\n                context.set('offTimer', null);\n                \n                node.send({\n                    payload: {\n                        sensors: Object.values(freshRegister),\n                        globalAlertStatus: 'OFF'\n                    }\n                });\n            }, OFF_DELAY);\n            \n            context.set('offTimer', offTimer);\n        }\n    }\n    \n    msg.payload = { sensors: sensorArray, globalAlertStatus: currentStatus };\n    node.send(msg);\n}\n\nreturn null;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 430,
-        "y": 980,
-        "wires": [
-            []
         ]
     },
     {
         "id": "471726f70f7b1950",
         "type": "inject",
         "z": "ac4cb02db15fb728",
+        "g": "185ad95e316c8f74",
         "name": "Start Multi Sensor",
         "props": [
             {
@@ -769,8 +486,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 150,
-        "y": 820,
+        "x": 170,
+        "y": 1100,
         "wires": [
             [
                 "ff46ff8a3cab9510",
@@ -783,6 +500,7 @@
         "type": "change",
         "z": "ac4cb02db15fb728",
         "d": true,
+        "g": "185ad95e316c8f74",
         "name": "Globale Sensor-Konfiguration",
         "rules": [
             {
@@ -798,8 +516,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 430,
-        "y": 820,
+        "x": 470,
+        "y": 1080,
         "wires": [
             []
         ]
@@ -808,11 +526,12 @@
         "id": "c6af5deaf9f1f04f",
         "type": "ui-template",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "group": "75b15bea3008a8a4",
         "page": "",
         "ui": "",
         "name": "Ansicht Multi Sensor",
-        "order": 4,
+        "order": 2,
         "width": 0,
         "height": 0,
         "head": "",
@@ -822,8 +541,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1140,
-        "y": 720,
+        "x": 760,
+        "y": 880,
         "wires": [
             []
         ]
@@ -832,24 +551,28 @@
         "id": "f1815dfcfa20fc8e",
         "type": "debug",
         "z": "ac4cb02db15fb728",
+        "d": true,
+        "g": "185ad95e316c8f74",
         "name": "debug 2",
         "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 820,
-        "y": 920,
+        "x": 760,
+        "y": 1180,
         "wires": []
     },
     {
         "id": "6caee2d653a0c467",
         "type": "debug",
         "z": "ac4cb02db15fb728",
+        "g": "2b7a740ef0bf598d",
         "name": "debug 3",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": true,
         "tostatus": false,
@@ -857,14 +580,15 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1190,
-        "y": 480,
+        "x": 430,
+        "y": 720,
         "wires": []
     },
     {
         "id": "2065c5acdab784c6",
         "type": "function",
         "z": "ac4cb02db15fb728",
+        "g": "95ee46e3b6f68ca2",
         "name": "Ergänzen mit Sensorid",
         "func": "// 1. FEHLERSCHUTZ: Falls die Payload noch Text ist, in JSON umwandeln\nif (typeof msg.payload === \"string\") {\n    try {\n        msg.payload = JSON.parse(msg.payload);\n    } catch(e) {\n        node.error(\"Payload ist kein gültiges JSON: \" + msg.payload);\n        return msg;\n    }\n}\n\n// 2. Sensor-ID aus dem Topic holen\n// Falls msg.topic leer oder kein String ist, nutzen wir einen Fallback (\"unbekannt\")\nlet sensorId = \"unbekannt\";\nif (msg.topic && typeof msg.topic === \"string\") {\n    let topicParts = msg.topic.split('/');\n    // Filtert leere Einträge (falls das Topic mit / endet)\n    topicParts = topicParts.filter(part => part.length > 0); \n    if (topicParts.length > 0) {\n        sensorId = topicParts[topicParts.length - 1];\n    }\n}\n\n// 3. Sensor-ID in das Array einfügen\nif (Array.isArray(msg.payload)) {\n    msg.payload = msg.payload.map(item => {\n        if (typeof item === 'object' && item !== null) {\n            item.sensorid = sensorId; // Fügt das Feld direkt hinzu\n        }\n        return item;\n    });\n} else if (typeof msg.payload === 'object' && msg.payload !== null) {\n    // Falls es doch kein Array, sondern ein einzelnes Objekt ist\n    msg.payload.sensorid = sensorId;\n}\n\nreturn msg;\n",
         "outputs": 1,
@@ -873,8 +597,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 300,
-        "y": 720,
+        "x": 500,
+        "y": 620,
         "wires": [
             [
                 "5ca5501de76f4c18"
@@ -885,7 +609,8 @@
         "id": "5ca5501de76f4c18",
         "type": "function",
         "z": "ac4cb02db15fb728",
-        "name": "Globale Daten ",
+        "g": "95ee46e3b6f68ca2",
+        "name": "\"SensorConfig\" lesen/ergänzen ",
         "func": "// 1. Die sensorid aus der aktuellen Payload auslesen\nlet sensorId = msg.payload.sensorid;\n\n// 2. Den globalen Context \"sensorConfig\" abrufen\nlet sensorConfig = global.get(\"sensorConfig\") || {};\n\n// 3. Die passenden Sensordaten aus der Tabelle holen\nlet config = sensorConfig[sensorId];\n\n// 4. Wenn der Sensor in der Tabelle existiert, die Felder ergänzen\nif (config) {\n    msg.payload.offsetX = config.offsetX;\n    msg.payload.offsetY = config.offsetY;\n    msg.payload.winkel = config.winkel;\n    msg.payload.sensorBez = config.sensorBez;\n}\nmsg.payload.occupancy =  msg.payload.targets.length > 0 ? 1 : 0 ;\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
@@ -893,12 +618,11 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 520,
-        "y": 720,
+        "x": 770,
+        "y": 620,
         "wires": [
             [
-                "84b5a61436c0abe5",
-                "9e948578b3fadfd2"
+                "e78752cf81108647"
             ]
         ]
     },
@@ -906,6 +630,7 @@
         "id": "84b5a61436c0abe5",
         "type": "function",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "name": "Umrechnung Offsets, Winkel",
         "func": "// ==================== KALIBRIERUNG ====================\n// MASSSTAB: Wie viele Pixel auf der Zeichnung entsprechen einer Sensor-Einheit?\n// Wenn der Sensor in cm misst und deine Zeichnung 800px breit ist, versuche z.B. 0.5 oder 0.2\nconst SCALE = 0.05; \n\n// SENSOR-URSPRUNG: Werkseitiger Mittelpunkt der Hardware (LD2410 Standard: X=50, Y=125)\nconst HARDWARE_CENTER_X = 50;\nconst HARDWARE_CENTER_Y = 125;\n// ======================================================\n\nlet incoming = msg.payload;\nif (typeof incoming === \"string\") {\n    try { incoming = JSON.parse(incoming); } catch(e) { return msg; }\n}\n\nlet offsetX = typeof incoming.offsetX === \"number\" ? incoming.offsetX : 0;\nlet offsetY = typeof incoming.offsetY === \"number\" ? incoming.offsetY : 0;\nlet winkel = typeof incoming.winkel === \"number\" ? incoming.winkel : 0;\n\nif (incoming.targets && Array.isArray(incoming.targets)) {\n    incoming.targets = incoming.targets.map(t => {\n        let alpha = winkel * Math.PI / 180;\n        //let d = Math.hypot(t.x, t.y);\n        // 1. Relativen Abstand zum Hardware-Nullpunkt berechnen\n        let relX = t.x - HARDWARE_CENTER_X;\n        let relY = HARDWARE_CENTER_Y - t.y; \n        \n        // 2. Den Massstab auf die relative Distanz anwenden (Skalierung)\n        relX = relX * SCALE;\n        relY = relY * SCALE;\n        \n        // 3. Rotationsmatrix anwenden (Winkel-Drehung)\n      //  let rotX = relX * Math.cos(alpha) + relY * Math.sin(alpha);\n      //  let rotY = -relX * Math.sin(alpha) +  relY * Math.cos(alpha);\n\n        // 3. Rotationsmatrix anwenden (Winkel-Drehung für dein System)\n      //  let rotX = relX * Math.cos(alpha) - relY * Math.sin(alpha);\n      //  let rotY = relX * Math.sin(alpha) + relY * Math.cos(alpha);\n\n        // 3. Rotationsmatrix anwenden (Perfekt abgestimmt auf dein System)\n        let rotX = relX * Math.cos(alpha) - relY * Math.sin(alpha);\n        let rotY = -relX * Math.sin(alpha) - relY * Math.cos(alpha);\n\n        // 4. Globale Position auf dem Hausplan (SVG-Pixel) berechnen\n        let finalX = offsetX + rotX;\n        let finalY = offsetY - rotY;\n\n        return {\n            id: t.id,\n            s: t.s,\n            d: t.d,\n            x: Math.round(finalX),\n            y: Math.round(finalY)\n        };\n    });\n}\n\nmsg.payload = incoming;\nreturn msg;\n",
         "outputs": 1,
@@ -914,13 +639,12 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 740,
-        "y": 720,
+        "x": 340,
+        "y": 900,
         "wires": [
             [
                 "afab3921f42d31c2",
-                "a3317880b5905381",
-                "26dcf852f9ed3e3e"
+                "a3317880b5905381"
             ]
         ]
     },
@@ -928,6 +652,7 @@
         "id": "afab3921f42d31c2",
         "type": "switch",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "name": "",
         "property": "payload.occupancy",
         "propertyType": "msg",
@@ -946,8 +671,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 950,
-        "y": 800,
+        "x": 570,
+        "y": 920,
         "wires": [
             [
                 "74f257607f4db059"
@@ -961,6 +686,7 @@
         "id": "74f257607f4db059",
         "type": "change",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "name": "START-FAR-Sound",
         "rules": [
             {
@@ -1011,8 +737,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1130,
-        "y": 800,
+        "x": 750,
+        "y": 920,
         "wires": [
             [
                 "6422489bdef6845a"
@@ -1023,6 +749,7 @@
         "id": "06d45f0b91f5656f",
         "type": "change",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "name": "STOPP",
         "rules": [
             {
@@ -1052,8 +779,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1100,
-        "y": 860,
+        "x": 720,
+        "y": 960,
         "wires": [
             [
                 "6422489bdef6845a"
@@ -1064,10 +791,11 @@
         "id": "6422489bdef6845a",
         "type": "ui-audio",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "group": "75b15bea3008a8a4",
         "ui": "",
         "name": "",
-        "order": 2,
+        "order": 1,
         "width": "2",
         "height": "1",
         "mode": "src",
@@ -1077,8 +805,8 @@
         "loop": "on",
         "muted": "off",
         "className": "",
-        "x": 1340,
-        "y": 820,
+        "x": 960,
+        "y": 940,
         "wires": [
             []
         ]
@@ -1087,6 +815,7 @@
         "id": "a3317880b5905381",
         "type": "function",
         "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
         "name": "function 1",
         "func": "// Bestehendes Sensor-Objekt aus dem Kontext holen oder neu erstellen\nlet sensors = context.get('radar_sensors') || {};\n\n// Prüfen, ob die MQTT-Nachricht gültige Radardaten enthält\nif (msg.payload && msg.payload.sensorid) {\n    // Speichere oder aktualisiere die Daten dieses spezifischen Sensors\n    sensors[msg.payload.sensorid] = msg.payload;\n\n    // Im Kontext für die nächste Nachricht sichern\n    context.set('radar_sensors', sensors);\n}\n\n// Wir wandeln das Objekt in ein Array (Liste) um, \n// damit Vue im Dashboard einfach per v-for darüber loopen kann.\nmsg.payload = Object.values(sensors);\n\nreturn msg;\n",
         "outputs": 1,
@@ -1095,8 +824,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 960,
-        "y": 720,
+        "x": 580,
+        "y": 880,
         "wires": [
             [
                 "c6af5deaf9f1f04f"
@@ -1104,51 +833,10 @@
         ]
     },
     {
-        "id": "04efc6d6a2155f42",
-        "type": "ui-template",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "group": "75b15bea3008a8a4",
-        "page": "",
-        "ui": "",
-        "name": "ok, ohne Bilder",
-        "order": 5,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<!-- STRUKTURELLER CONTAINER FÜR DASHBOARD 2.0 -->\n<div style=\"width: 100%; min-width: 400px; max-width: 800px; margin: 5px auto; display: flex; flex-direction: column; background-color: #f5f5f5; border: 1px solid #ccc; box-sizing: border-box;\">\n  \n  <!-- KARTEN-CONTAINER -->\n  <div style=\"width: 100%; height: 600px; position: relative; overflow: hidden; background-color: #f5f5f5;\">\n    \n    <!-- SAUBERES SVG OVERLAY -->\n    <svg xmlns=\"http://w3.org\" viewBox=\"0 0 800 600\" style=\"width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2;\">\n      <defs>\n        <!-- Text-Hintergrundfilter -->\n        <filter x=\"-0.1\" y=\"-0.1\" width=\"1.2\" height=\"1.2\" id=\"bg-text\">\n          <feFlood flood-color=\"#111111\" flood-opacity=\"0.85\" />\n          <feComposite in=\"SourceGraphic\" operator=\"over\" />\n        </filter>\n      </defs>\n\n      <!-- HAUPT-WRAPPER (Verschiebung und Skalierung der Gesamtszene) -->\n      <g transform=\"translate(80, 120) scale(0.9)\">\n        \n        <!-- ========================================== -->\n        <!-- HIER IHRE ZEICHNUNG ALS INLINE-SVG EINFÜGEN -->\n        <!-- ========================================== -->\n        <!-- Öffnen Sie Ihre 'Zeichnung.svg' mit einem Texteditor (z.B. Notepad++). -->\n        <!-- Kopieren Sie den gesamten Inhalt (alles zwischen <svg> und </svg>). -->\n        <!-- Ersetzen Sie diese Zeile hier mit Ihrem kopierten Code. -->\n        <!-- Wichtig: Verwenden Sie hier drinnen KEINE <svg>-Tags, sondern nur die Elemente (wie <g>, <path>, <rect> etc.). -->\n        <g id=\"mein-hintergrundplan\" style=\"pointer-events: auto;\">\n          <!-- Beispiel-Platzhalter (wird durch Ihren echten Inhalt ersetzt): -->\n          <rect x=\"0\" y=\"0\" width=\"640\" height=\"480\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1\" />\n          <text x=\"20\" y=\"30\" fill=\"#888888\" font-family=\"sans-serif\" font-size=\"14\">Hintergrund-Lageplan (Vektor)</text>\n        </g>\n        <!-- ========================================== -->\n\n\n        <!-- SCHLEIFE ÜBER DIE RADAR-SENSOREN (Bleiben unverändert scharf) -->\n        <g v-if=\"msg && Array.isArray(msg.payload)\" v-for=\"(sensor, idx) in msg.payload\" :key=\"sensor.sensorid || idx\">\n          \n          <!-- 1. DYNAMISCHE SICHTKEULE -->\n          <path d=\"M 0 0 L -189 -109.38 A 218.75 218.75 0 0 1 189 -109.38 Z\" \n                :style=\"{ \n                  fill: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#b4b4b4', \n                  fillOpacity: sensor.targets && sensor.targets.length > 0 ? 0.25 : 0.12, \n                  stroke: sensor.targets && sensor.targets.length > 0 ? '#ff3b30' : '#888888', \n                  strokeWidth: '1.5px', \n                  strokeDasharray: sensor.targets && sensor.targets.length > 0 ? 'none' : '2,2', \n                  strokeOpacity: 0.6 \n                }\" \n                :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ') rotate(' + (sensor.winkel || 0) + ')'\" />\n\n          <!-- 2. SENSOR-ZENTRUM -->\n          <circle :cx=\"sensor.offsetX || 0\" :cy=\"sensor.offsetY || 0\" r=\"6\" style=\"fill: #ff9900; stroke: #ffffff; stroke-width: 1.5px;\" />\n\n          <!-- 3. SENSOR-ID UND BEZEICHNUNG -->\n          <g :transform=\"'translate(' + (sensor.offsetX || 0) + ',' + (sensor.offsetY || 0) + ')'\">\n            <text x=\"10\" y=\"2\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff9900;\">\n              {{ sensor.sensorid }} ({{ sensor.winkel }}°)\n            </text>\n            <text x=\"10\" y=\"12\" font-size=\"8\" font-family=\"sans-serif\" font-weight=\"normal\" filter=\"url(#bg-text)\" style=\"fill: #aaaaaa;\">\n              {{ sensor.sensorBez }}\n            </text>\n          </g>\n\n          <!-- 4. TARGETS PRO SENSOR -->\n          <g v-for=\"(t, index) in sensor.targets\" :key=\"t.id || index\" :transform=\"'translate(' + t.x + ',' + t.y + ')'\">\n            <circle cx=\"0\" cy=\"0\" r=\"7\" style=\"fill: #ff3b30; stroke: #ffffff; stroke-width: 1.5px; pointer-events: auto;\" />\n            <text x=\"10\" y=\"4\" font-size=\"10\" font-family=\"sans-serif\" font-weight=\"bold\" filter=\"url(#bg-text)\" style=\"fill: #ff3b30;\">\n              ID:{{ t.id }} (s:{{ t.s }})\n            </text>\n          </g>\n\n        </g>\n      </g>\n    </svg>\n  </div>\n\n  <!-- STATUS-BALKEN -->\n  <div v-if=\"msg && Array.isArray(msg.payload)\"\n       :style=\"{ \n         width: '100%', padding: '8px 0', textAlign: 'center', fontWeight: 'bold', fontSize: '13px', color: '#ffffff', \n         backgroundColor: msg.payload.some(s => s.targets && s.targets.length > 0) ? '#ff3b30' : '#34c759' \n       }\">\n    {{ msg.payload.some(s => s.targets && s.targets.length > 0) ? '⚠️ TARGET ERKANNT' : '✅ BEREICH FREI' }}\n  </div>\n</div>\n",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 560,
-        "y": 1040,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "2ceb3fbc408c76b1",
-        "type": "debug",
-        "z": "ac4cb02db15fb728",
-        "name": "debug 1",
-        "active": false,
-        "tosidebar": true,
-        "console": true,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 350,
-        "y": 620,
-        "wires": []
-    },
-    {
         "id": "db9d609e32e47d32",
         "type": "http request",
         "z": "ac4cb02db15fb728",
+        "g": "185ad95e316c8f74",
         "name": "",
         "method": "GET",
         "ret": "obj",
@@ -1161,8 +849,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 410,
-        "y": 900,
+        "x": 430,
+        "y": 1180,
         "wires": [
             [
                 "aac8a163eefad152"
@@ -1173,6 +861,7 @@
         "id": "aac8a163eefad152",
         "type": "function",
         "z": "ac4cb02db15fb728",
+        "g": "185ad95e316c8f74",
         "name": "function 2",
         "func": "// Prüfen, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n\n    // Das neue Zielobjekt initialisieren\n    let neueStruktur = {};\n\n    // Jedes Element aus dem Input-Array durchlaufen\n    msg.payload.forEach(item => {\n\n        // Den Sensor-Schlüssel dynamisch bestimmen (z.B. \"RD06D_05\" -> \"rd06d_05\")\n        // Falls der Schlüssel exakt so bleiben soll wie im Input, das .toLowerCase() einfach löschen\n        let sensorKey = item.sensorid ? item.sensorid.toLowerCase() : \"unbekannt\";\n\n        // Die exakte neue Feldstruktur mit korrekter Gross-/Kleinschreibung aufbauen\n        neueStruktur[sensorKey] = {\n            \"offsetX\": item.offsetx,\n            \"offsetY\": item.offsety,\n            \"winkel\": item.winkel,\n            \"sensorBez\": item.sensorbez\n        };\n    });\n    // 1. Die Struktur in der globalen Variable \"sensorConfig\" speichern\n    global.set(\"sensorConfig\", neueStruktur);\n    // Die transformierte Struktur an die Payload übergeben\n    msg.payload = neueStruktur;\n}\n\nreturn msg;",
         "outputs": 1,
@@ -1182,7 +871,7 @@
         "finalize": "",
         "libs": [],
         "x": 600,
-        "y": 900,
+        "y": 1180,
         "wires": [
             [
                 "f1815dfcfa20fc8e"
@@ -1193,6 +882,7 @@
         "id": "5087d7ceb96eb8a7",
         "type": "switch",
         "z": "ac4cb02db15fb728",
+        "g": "95ee46e3b6f68ca2",
         "name": "",
         "property": "sensorConfig",
         "propertyType": "global",
@@ -1207,8 +897,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 110,
-        "y": 720,
+        "x": 310,
+        "y": 620,
         "wires": [
             [],
             [
@@ -1217,49 +907,11 @@
         ]
     },
     {
-        "id": "26dcf852f9ed3e3e",
-        "type": "function",
-        "z": "ac4cb02db15fb728",
-        "d": true,
-        "name": "Prepare Influx-DB-Input",
-        "func": "const p = msg.payload || {};\nconst targets = Array.isArray(p.targets) ? p.targets : [];\n\n// Sicherstellen, dass occupancy eine Zahl ist (0 oder 1)\nconst occupancy = Number(p.occupancy) ? 1 : 0;\n\nlet minDistanceCm = null;\n\n// Berechnung der minimalen Distanz, sofern Targets existieren\nif (targets.length > 0) {\n  const ds = targets\n    .map(t => Number(t.d))\n    .filter(v => !Number.isNaN(v));\n\n  if (ds.length > 0) {\n    minDistanceCm = Math.min(...ds);\n  }\n}\n\n// Felder-Objekt aufbauen\nconst fields = {\n  occupancy: occupancy,\n  targetCount: targets.length\n};\n\n// Falls keine Targets da sind, setzen wir 0.0 (Float), damit das Feld IMMER existiert\nfields.minDistanceCm_Test = minDistanceCm !== null ? minDistanceCm : 0.0;\n\n// WICHTIG: Das Array MUSS in msg.payload stehen, damit der Influx-Node es frisst\nmsg.payload = [\n  {\n    measurement: \"radar_events\",\n    tags: {\n      sensorid: String(p.sensorid ?? \"unknown\"),\n      sensorBez: String(p.sensorBez ?? \"\")\n    },\n    fields: fields,\n    timestamp: Date.now() + \"000000\" // Zuverlässige Nanosekunden\n  }\n];\n\n// Debug-Ausgabe im Node-RED Log\nnode.warn(JSON.stringify(msg.payload, null, 2));\n//msg.payload[0].fields.minDistanceCm_Test = Number(msg.payload[0].fields.minDistanceCm_Test);\n//msg.payload[0].fields.minDistanceCm_Test = 0.0; // statt 0\nmsg.payload = msg.payload[0];\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1030,
-        "y": 600,
-        "wires": [
-            [
-                "3d6df5492d1e3a9b"
-            ]
-        ]
-    },
-    {
-        "id": "3d6df5492d1e3a9b",
-        "type": "influxdb out",
-        "z": "ac4cb02db15fb728",
-        "influxdb": "90257f8209a4337c",
-        "name": "Influx-DB",
-        "measurement": "radar_events",
-        "precision": "",
-        "retentionPolicy": "",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
-        "retentionPolicyV18Flux": "",
-        "org": "home",
-        "bucket": "radar_data",
-        "x": 1240,
-        "y": 600,
-        "wires": []
-    },
-    {
         "id": "9e948578b3fadfd2",
         "type": "function",
         "z": "ac4cb02db15fb728",
-        "name": "influx-input",
+        "g": "2b7a740ef0bf598d",
+        "name": "prepare-influx-input",
         "func": "// 1. InfluxDB v2 Konfiguration\nconst server = \"http://localhost:8086\";\nconst token = \"TBgaNg68u6XU3I7Zv47vPc8xjol4dmRey-PwA4ZwuOh9SObwnF3aNKHCJuNS7REvL9T-66X0EktiN5Vg1gzyGg==\";\nconst org = \"home\";\nconst bucket = \"radar_data\"; // Geändert auf deinen Wunsch\n\n// 2. Eingangsdaten prüfen\nconst data = msg.payload;\n\n// Bedingung 1: Nur senden, wenn occupancy gleich 1 ist\n// (Prüfung fängt sowohl die Zahl 1 als auch den String \"1\" ab)\nif (Number(data.occupancy) !== 1) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: occupancy nicht 1\" });\n    return null;\n}  \n\n// 3. Kleinstes 'd' (Distance) aus dem targets-Array ermitteln\nlet minD = Infinity;\n\nif (data.targets && data.targets.length > 0) {\n    for (const target of data.targets) {\n        if (target.d < minD) {\n            minD = target.d;\n        }\n    }\n}\n\n//if (minD === Infinity ) minD = 0;\n// Bedingung 2: Nur senden, wenn ein gültiges d > 0 gefunden wurde\nif (minD === Infinity || minD <= 0) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: kein target mit d > 0\" });\n    return null;\n} \n\n// 4. Line Protocol aufbauen (mit deinen exakten Bezeichnungen)\nconst measurement = \"radar_ev\";\n// Tags (Leerzeichen in sensorBez werden für InfluxDB automatisch mit Backslash maskiert)\nconst sauberBez = data.sensorBez.replace(/ /g, '\\\\ ');\nconst tags = `sensorid=${data.sensorid},sensorBez=${sauberBez}`;\n\n// Fields\nconst fields = `distancecm=${minD},occupancy=${data.occupancy}`;\n\n// Line Protocol String finalisieren\nconst lineProtocol = `${measurement},${tags} ${fields}`;\n\n// 5. HTTP-Request für die nachfolgende HTTP-Request-Node vorbereiten\nmsg.payload = lineProtocol;\nmsg.url = `${server}/api/v2/write?org=${org}&bucket=${bucket}&precision=s`;\nmsg.headers = {\n    \"Authorization\": `Token ${token}`,\n    \"Content-Type\": \"text/plain; charset=utf-8\"\n};\n\n// Status-Anzeige unter der Node in Node-RED aktualisieren\nnode.status({ fill: \"green\", shape: \"dot\", text: `Gesendet: d=${minD}` });\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
@@ -1267,8 +919,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 790,
-        "y": 620,
+        "x": 230,
+        "y": 760,
         "wires": [
             [
                 "914fdd403ecf6f5c",
@@ -1280,7 +932,8 @@
         "id": "914fdd403ecf6f5c",
         "type": "http request",
         "z": "ac4cb02db15fb728",
-        "name": "",
+        "g": "2b7a740ef0bf598d",
+        "name": "send influx-data",
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
@@ -1292,10 +945,152 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 950,
-        "y": 520,
+        "x": 440,
+        "y": 760,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "e78752cf81108647",
+        "type": "link out",
+        "z": "ac4cb02db15fb728",
+        "g": "95ee46e3b6f68ca2",
+        "name": "Sensordaten ok",
+        "mode": "link",
+        "links": [
+            "22e0188111a56c25",
+            "03e37622fa503e95",
+            "119027a0049a8d9a"
+        ],
+        "x": 995,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "22e0188111a56c25",
+        "type": "link in",
+        "z": "ac4cb02db15fb728",
+        "g": "2b7a740ef0bf598d",
+        "name": "link in 1",
+        "links": [
+            "e78752cf81108647"
+        ],
+        "x": 65,
+        "y": 760,
+        "wires": [
+            [
+                "9e948578b3fadfd2"
+            ]
+        ]
+    },
+    {
+        "id": "03e37622fa503e95",
+        "type": "link in",
+        "z": "ac4cb02db15fb728",
+        "g": "386ca7890191d744",
+        "name": "link in 2",
+        "links": [
+            "e78752cf81108647"
+        ],
+        "x": 65,
+        "y": 900,
+        "wires": [
+            [
+                "84b5a61436c0abe5"
+            ]
+        ]
+    },
+    {
+        "id": "119027a0049a8d9a",
+        "type": "link in",
+        "z": "ac4cb02db15fb728",
+        "name": "link in 3",
+        "links": [
+            "e78752cf81108647"
+        ],
+        "x": 615,
+        "y": 720,
+        "wires": [
+            [
+                "0c614c43b295d026"
+            ]
+        ]
+    },
+    {
+        "id": "0c614c43b295d026",
+        "type": "function",
+        "z": "ac4cb02db15fb728",
+        "name": "function 3",
+        "func": "// 2. Eingangsdaten prüfen\nconst data = msg.payload;\n\n// Bedingung 1: Nur senden, wenn occupancy gleich 1 ist\n// (Prüfung fängt sowohl die Zahl 1 als auch den String \"1\" ab)\nif (Number(data.occupancy) !== 1) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: occupancy nicht 1\" });\n    return null;\n}\n\n// 3. Kleinstes 'd' (Distance) aus dem targets-Array ermitteln\nlet minD = Infinity;\nif (data.targets && data.targets.length > 0) {\n    for (const target of data.targets) {\n        if (target.d < minD) {\n            minD = target.d;\n        }\n    }\n}\n\n// Bedingung 2: Nur senden, wenn ein gültiges d > 0 gefunden wurde\nif (minD === Infinity || minD <= 0) {\n    node.status({ fill: \"grey\", shape: \"ring\", text: \"Ignoriert: kein target mit d > 0\" });\n    return null;\n}\n\n// --- ÄNDERUNG HIER: Formatierung für den Telegram-Knoten ---\n// Wir verpacken den Text in das von Telegram erwartete Objekt\nmsg.payload = {\n    chatId: 8802727747,  // RECHTSCHREIB-WARNUNG: Das \"I\" bei chatId MUSS groß geschrieben sein!\n    type: \"message\",\n    content: `Sensor ${data.sensorid} ${data.sensorBez} meldet Bewegung mit ${minD}cm Distanz`\n};\n\n// Status-Anzeige unter der Node in Node-RED aktualisieren\nnode.status({ fill: \"green\", shape: \"dot\", text: `Gesendet:${data.sensorid} d=${minD}` });\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 720,
+        "wires": [
+            [
+                "7ea5493259a340c4"
+            ]
+        ]
+    },
+    {
+        "id": "7ea5493259a340c4",
+        "type": "delay",
+        "z": "ac4cb02db15fb728",
+        "name": "Delay Telegram-Message",
+        "pauseType": "rate",
+        "timeout": "30",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "10",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 910,
+        "y": 720,
+        "wires": [
+            [
+                "cfdc799961ace830",
+                "622779f34407fc66"
+            ]
+        ]
+    },
+    {
+        "id": "cfdc799961ace830",
+        "type": "telegram sender",
+        "z": "ac4cb02db15fb728",
+        "name": "",
+        "bot": "78361a3ed26ce4c5",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1150,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "622779f34407fc66",
+        "type": "debug",
+        "z": "ac4cb02db15fb728",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 800,
+        "wires": []
     }
 ]
